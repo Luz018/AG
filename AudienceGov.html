@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AudienceGov — Services du Gouverneur</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script>
+    window.AUDIENCEGOV_CONFIG = window.AUDIENCEGOV_CONFIG || {
+      supabaseUrl: '',
+      supabaseAnonKey: ''
+    };
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --blue-dark: #042C53;
+      --blue-mid: #0C447C;
+      --blue: #185FA5;
+      --blue-light: #E6F1FB;
+      --blue-border: #85B7EB;
+      --green-bg: #EAF3DE;
+      --green-text: #3B6D11;
+      --green-border: #97C459;
+      --red-bg: #FCEBEB;
+      --red-text: #A32D2D;
+      --red-border: #F09595;
+      --amber-bg: #FAEEDA;
+      --amber-text: #854F0B;
+      --amber-border: #FAC775;
+      --surface: #fff;
+      --surface-1: #f5f5f3;
+      --surface-2: #eeede9;
+      --text: #1a1a18;
+      --text-secondary: #5f5e5a;
+      --text-muted: #888780;
+      --border: rgba(0, 0, 0, 0.12);
+      --border-strong: rgba(0, 0, 0, 0.22);
+      --radius: 8px
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f0efe9;
+      min-height: 100vh;
+      color: var(--text)
+    }
+
+    /* WELCOME */
+    #welcome {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(160deg, var(--blue-dark) 0%, var(--blue-mid) 60%, #1a6bbf 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity .6s, visibility .6s
+    }
+
+    #welcome.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none
+    }
+
+    .w-coat {
+      width: 110px;
+      height: 110px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.35))
+    }
+
+    .w-coat img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain
+    }
+
+    .w-app-name {
+      font-size: 28px;
+      font-weight: 500;
+      color: #fff;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px
+    }
+
+    .w-greeting {
+      font-size: 42px;
+      font-weight: 300;
+      color: #fff;
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+      min-height: 54px;
+      transition: opacity .4s
+    }
+
+    .w-sub {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      text-align: center;
+      margin-bottom: 40px;
+      line-height: 1.7
+    }
+
+    .lang-row {
+      display: flex;
+      gap: 12px
+    }
+
+    .lang-btn {
+      padding: 11px 36px;
+      border-radius: 99px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s, transform .15s
+    }
+
+    .lang-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: translateY(-1px)
+    }
+
+    .lang-btn.primary {
+      background: #fff;
+      color: var(--blue-mid)
+    }
+
+    .lang-btn.primary:hover {
+      background: #eef4fc
+    }
+
+    .w-flag {
+      margin-top: 36px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.35);
+      letter-spacing: .08em;
+      text-transform: uppercase
+    }
+
+    /* APP */
+    #app {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column
+    }
+
+    #app.visible {
+      display: flex
+    }
+
+    /* TOP NAV */
+    .top-nav {
+      background: var(--blue-dark);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      height: 60px;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 50
+    }
+
+    .nav-coat {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0
+    }
+
+    .nav-coat img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: brightness(0) invert(1) opacity(0.85)
+    }
+
+    .nav-titles {
+      flex: 1
+    }
+
+    .nav-app {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.2
+    }
+
+    .nav-region {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 11px
+    }
+
+    .lang-toggle {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.55);
+      cursor: pointer;
+      padding: 4px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 99px;
+      transition: all .2s;
+      white-space: nowrap
+    }
+
+    .lang-toggle:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.5)
+    }
+
+    /* TABS */
+    .tab-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      padding: 0 16px;
+      position: sticky;
+      top: 60px;
+      z-index: 40;
+      overflow-x: auto
+    }
+
+    .tab {
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .tab.active {
+      color: var(--blue-mid);
+      border-bottom-color: var(--blue-mid);
+      font-weight: 500
+    }
+
+    /* PANELS */
+    .panel {
+      display: none;
+      padding: 28px 24px;
+      max-width: 680px;
+      margin: 0 auto;
+      width: 100%
+    }
+
+    .panel.active {
+      display: block
+    }
+
+    .section-heading {
+      margin-bottom: 22px
+    }
+
+    .section-heading h2 {
+      font-size: 19px;
+      font-weight: 500;
+      margin-bottom: 4px
+    }
+
+    .section-heading p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6
+    }
+
+    /* FORM */
+    .form-group {
+      margin-bottom: 16px
+    }
+
+    .form-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 5px
+    }
+
+    .form-group label span {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 400
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 14px;
+      color: var(--text);
+      background: var(--surface);
+      font-family: inherit;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(24, 95, 165, 0.1)
+    }
+
+    .form-group input.error,
+    .form-group textarea.error,
+    .form-group select.error {
+      border-color: var(--red-text)
+    }
+
+    .field-error {
+      font-size: 11px;
+      color: var(--red-text);
+      margin-top: 4px;
+      display: none
+    }
+
+    .field-error.show {
+      display: block
+    }
+
+    .form-group textarea {
+      resize: none;
+      line-height: 1.6
+    }
+
+    .word-count {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+      margin-top: 3px
+    }
+
+    .word-count.over {
+      color: var(--red-text)
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background: var(--blue-mid);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background .2s, transform .1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-dark)
+    }
+
+    .btn-primary:active {
+      transform: scale(.99)
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      top: 76px;
+      right: 24px;
+      background: var(--blue-dark);
+      color: #fff;
+      padding: 13px 18px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      transform: translateX(120%);
+      transition: transform .3s cubic-bezier(.34, 1.56, .64, 1)
+    }
+
+    .toast.show {
+      transform: translateX(0)
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 12px
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px
+    }
+
+    .card-name {
+      font-size: 15px;
+      font-weight: 500
+    }
+
+    .card-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 6px 0 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px
+    }
+
+    .card-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .card-purpose {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      background: var(--surface-1);
+      border-radius: 6px;
+      border-left: 3px solid var(--blue-border)
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-weight: 500;
+      white-space: nowrap
+    }
+
+    .badge.pending {
+      background: var(--amber-bg);
+      color: var(--amber-text)
+    }
+
+    .badge.approved {
+      background: var(--green-bg);
+      color: var(--green-text)
+    }
+
+    .badge.rejected {
+      background: var(--red-bg);
+      color: var(--red-text)
+    }
+
+    .badge.delegated {
+      background: var(--blue-light);
+      color: var(--blue)
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .action-btn {
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: opacity .2s
+    }
+
+    .action-btn:hover {
+      opacity: .82
+    }
+
+    .btn-approve {
+      background: var(--green-bg);
+      color: var(--green-text);
+      border-color: var(--green-border)
+    }
+
+    .btn-reject {
+      background: var(--red-bg);
+      color: var(--red-text);
+      border-color: var(--red-border)
+    }
+
+    .btn-delegate {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-color: var(--blue-border)
+    }
+
+    /* STATS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 24px
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center
+    }
+
+    .stat-num {
+      font-size: 26px;
+      font-weight: 500;
+      line-height: 1;
+      margin-bottom: 4px
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4
+    }
+
+    /* HISTORY */
+    .year-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px
+    }
+
+    .year-selector select {
+      padding: 7px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 13px;
+      background: var(--surface);
+      color: var(--text);
+      outline: none
+    }
+
+    .history-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--surface-1);
+      border-radius: 6px
+    }
+
+    /* HOD FREQUENCY */
+    .hod-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 24px
+    }
+
+    .hod-table th {
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: .04em
+    }
+
+    .hod-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .hod-bar {
+      height: 6px;
+      border-radius: 99px;
+      background: var(--blue-light);
+      margin-top: 4px
+    }
+
+    .hod-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--blue)
+    }
+
+    /* PIN OVERLAY */
+    .pin-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 44, 83, 0.92);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center
+    }
+
+    .pin-overlay.open {
+      display: flex
+    }
+
+    .pin-box {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 340px;
+      text-align: center
+    }
+
+    .pin-coat {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 16px
+    }
+
+    .pin-coat img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain
+    }
+
+    .pin-box h3 {
+      font-size: 17px;
+      font-weight: 500;
+      margin-bottom: 6px
+    }
+
+    .pin-box p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 20px
+    }
+
+    .pin-input {
+      width: 100%;
+      padding: 12px;
+      text-align: center;
+      font-size: 22px;
+      letter-spacing: 8px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      outline: none;
+      font-family: monospace
+    }
+
+    .pin-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(24, 95, 165, 0.1)
+    }
+
+    .pin-error {
+      font-size: 12px;
+      color: var(--red-text);
+      margin-top: 6px;
+      min-height: 18px
+    }
+
+    .btn-pin {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px;
+      background: var(--blue-mid);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer
+    }
+
+    /* REJECT COMPOSE */
+    .compose-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 300;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 16px;
+      overflow-y: auto
+    }
+
+    .compose-overlay.open {
+      display: flex
+    }
+
+    .compose-box {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 28px;
+      width: 100%;
+      max-width: 560px
+    }
+
+    .compose-box h3 {
+      font-size: 17px;
+      font-weight: 500;
+      margin-bottom: 4px
+    }
+
+    .compose-box .compose-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 20px
+    }
+
+    .compose-to {
+      padding: 10px 14px;
+      background: var(--surface-1);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      border: 1px solid var(--border)
+    }
+
+    .compose-textarea {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 14px;
+      color: var(--text);
+      background: var(--surface);
+      font-family: inherit;
+      min-height: 220px;
+      resize: vertical;
+      outline: none;
+      line-height: 1.7
+    }
+
+    .compose-textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(24, 95, 165, 0.1)
+    }
+
+    .compose-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px
+    }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 11px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background: none;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text)
+    }
+
+    .btn-send-reject {
+      flex: 2;
+      padding: 11px;
+      background: var(--red-text);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer
+    }
+
+    /* DELEGATE MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px
+    }
+
+    .modal-overlay.open {
+      display: flex
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 28px;
+      max-width: 380px;
+      width: 100%
+    }
+
+    .modal h3 {
+      font-size: 17px;
+      font-weight: 500;
+      margin-bottom: 6px
+    }
+
+    .modal p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 18px
+    }
+
+    .delegate-opt {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all .15s
+    }
+
+    .delegate-opt:hover,
+    .delegate-opt.selected {
+      border-color: var(--blue);
+      background: var(--blue-light)
+    }
+
+    .delegate-avatar {
+      width: 34px;
+      height: 34px;
+      background: var(--surface-2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      flex-shrink: 0
+    }
+
+    .delegate-title {
+      font-size: 14px;
+      font-weight: 500
+    }
+
+    .delegate-sub {
+      font-size: 12px;
+      color: var(--text-secondary)
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px
+    }
+
+    .btn-modal-cancel {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background: none;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text)
+    }
+
+    .btn-modal-confirm {
+      flex: 1;
+      padding: 10px;
+      background: var(--blue-mid);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer
+    }
+
+    /* EMPTY */
+    .empty {
+      text-align: center;
+      padding: 40px 24px;
+      color: var(--text-muted)
+    }
+
+    .empty p {
+      font-size: 14px
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0
+    }
+
+    /* SUCCESS SCREEN */
+    .success-screen {
+      text-align: center;
+      padding: 40px 20px
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--green-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 28px
+    }
+
+    .success-screen h3 {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 8px
+    }
+
+    .success-screen p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 24px
+    }
+
+    .btn-new-request {
+      padding: 11px 28px;
+      background: var(--blue-mid);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer
+    }
+
+    @media(max-width:600px) {
+      .form-row {
+        grid-template-columns: 1fr
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .panel {
+        padding: 20px 14px
+      }
+
+      .tab {
+        padding: 12px 10px;
+        font-size: 12px
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- WELCOME -->
+  <div id="welcome">
+    <div class="w-coat"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Coat_of_arms_of_Cameroon.svg"
+        alt="Coat of arms of Cameroon" onerror="this.style.display='none'"></div>
+    <div class="w-app-name">AudienceGov</div>
+    <div class="w-greeting" id="w-greeting">Bienvenue</div>
+    <p class="w-sub">Services du Gouverneur · Governor's Services<br>Région du Sud · South Region</p>
+    <div class="lang-row">
+      <button class="lang-btn primary" onclick="enterApp('fr')">Français</button>
+      <button class="lang-btn" onclick="enterApp('en')">English</button>
+    </div>
+    <p class="w-flag">🇨🇲 République du Cameroun · Republic of Cameroon</p>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><span id="toast-msg"></span></div>
+
+  <!-- APP -->
+  <div id="app">
+    <nav class="top-nav">
+      <div class="nav-coat"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Coat_of_arms_of_Cameroon.svg"
+          alt="Coat of arms" onerror="this.style.display='none'"></div>
+      <div class="nav-titles">
+        <div class="nav-app">AudienceGov</div>
+        <div class="nav-region" id="nav-region">Services du Gouverneur — Région du Sud</div>
+      </div>
+      <div class="lang-toggle" onclick="toggleLang()" id="lang-toggle">EN</div>
+    </nav>
+
+    <div class="panel active" id="panel-public">
+      <div id="public-form-wrap">
+        <div class="section-heading">
+          <h2 id="pub-h">Demande d'audience</h2>
+          <p id="pub-sub">Remplissez le formulaire ci-dessous.</p>
+        </div>
+        <div class="form-group">
+          <label id="lbl-fname">Prénom <span id="lbl-fname-req">*</span></label>
+          <input type="text" id="inp-fname" placeholder="Jean-Paul">
+          <div class="field-error" id="err-fname"></div>
+        </div>
+        <div class="form-group">
+          <label id="lbl-lname">Nom de famille <span id="lbl-lname-req">*</span></label>
+          <input type="text" id="inp-lname" placeholder="Mbarga">
+          <div class="field-error" id="err-lname"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label id="lbl-phone">Numéro de téléphone <span>*</span></label>
+            <input type="tel" id="inp-phone" placeholder="+2376XXXXXXXX" maxlength="13">
+            <div class="field-error" id="err-phone"></div>
+          </div>
+          <div class="form-group">
+            <label id="lbl-email">Adresse email</label>
+            <input type="email" id="inp-email" placeholder="exemple@email.com">
+            <div class="field-error" id="err-email"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label id="lbl-vtype">Type de visiteur <span>*</span></label>
+          <select id="inp-vtype" onchange="vtypeChange()">
+            <option value="" id="opt-sel">-- Sélectionner --</option>
+            <option value="individual" id="opt-ind">Personne physique</option>
+            <option value="other" id="opt-oth">Autre</option>
+          </select>
+          <div class="field-error" id="err-vtype"></div>
+        </div>
+        <div class="form-group" id="other-specify-group" style="display:none">
+          <label id="lbl-specify">Précisez <span>*</span></label>
+          <input type="text" id="inp-specify" placeholder="Ex: Délégué régional, ONG, Représentant ministériel...">
+          <div class="field-error" id="err-specify"></div>
+        </div>
+        <div class="form-group">
+          <label id="lbl-target">Audience souhaitée avec <span>*</span></label>
+          <select id="inp-target">
+            <option value="">-- Sélectionner --</option>
+            <option value="gov" id="opt-gov">Gouverneur</option>
+            <option value="sg" id="opt-sg">Secrétaire Général</option>
+            <option value="sp" id="opt-sp">Secrétaire Particulier</option>
+            <option value="ig" id="opt-ig">Inspecteur Général</option>
+            <option value="daaj" id="opt-daaj">DAAJ — Division des Affaires Administratives et Juridiques</option>
+            <option value="daesc" id="opt-daesc">DAESC — Division des Affaires Économiques, Sociales et Culturelles
+            </option>
+            <option value="dbr" id="opt-dbr">DBR — Division du Budget et des Ressources</option>
+            <option value="dpoa" id="opt-dpoa">DPOA — Division de la Programmation et des Opérations Administratives
+            </option>
+          </select>
+          <div class="field-error" id="err-target"></div>
+        </div>
+        <div class="form-group">
+          <label id="lbl-purpose">Objet de la visite <span id="lbl-purpose-limit">(50 mots maximum)</span></label>
+          <textarea id="inp-purpose" rows="4" placeholder="Décrivez brièvement l'objet de votre visite..."
+            oninput="countWords()"></textarea>
+          <div class="word-count" id="word-count">0 / 50</div>
+          <div class="field-error" id="err-purpose"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label id="lbl-date">Date souhaitée <span>*</span></label>
+            <input type="date" id="inp-date">
+            <div class="field-error" id="err-date"></div>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="submitRequest()">
+          <span id="btn-submit">Envoyer la demande</span>
+        </button>
+      </div>
+      <div id="public-success" style="display:none">
+        <div class="success-screen">
+          <div class="success-icon">✓</div>
+          <h3 id="suc-h">Demande envoyée</h3>
+          <p id="suc-p">Votre demande a été reçue. Vous serez contacté par SMS et email dès qu'une décision sera prise.
+          </p>
+          <button class="btn-new-request" id="btn-new" onclick="newRequest()">Nouvelle demande</button>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:22px; padding-bottom:14px;">
+        <a href="staff.html" id="staff-access-link" style="font-size:12px; color:var(--text-muted); text-decoration:none;">Accès staff</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var lang = 'fr';
+    var supabaseClient = null;
+    var blockDatesKey = 'audiencegov_blocked_dates';
+
+    var T = {
+      fr: {
+        navRegion: 'Services du Gouverneur — Région du Sud',
+        pubH: 'Demande d\'audience', pubSub: 'Remplissez le formulaire ci-dessous.',
+        fname: 'Prénom', lname: 'Nom de famille', phone: 'Numéro de téléphone', email: 'Adresse email',
+        vtype: 'Type de visiteur', optSel: '-- Sélectionner --', optInd: 'Personne physique', optOth: 'Autre',
+        specify: 'Précisez', target: 'Audience souhaitée avec',
+        purpose: 'Objet de la visite', purposeLimit: '50 mots maximum', date: 'Date souhaitée',
+        btnSubmit: 'Envoyer la demande',
+        sucH: 'Demande envoyée', sucP: 'Votre demande a été reçue. Vous serez contacté par SMS et email dès qu\'une décision sera prise.',
+        btnNew: 'Nouvelle demande',
+        errRequired: 'Ce champ est obligatoire.', errPhone: 'Format invalide. Ex: +2376XXXXXXXX ou 6XXXXXXXX', errEmail: 'Adresse email invalide.', errWords: 'Maximum 50 mots.', errChars: 'Maximum 600 caractères pour l\'objet de la visite.', errDate: 'Veuillez sélectionner une date future.',
+        optGov: 'Gouverneur', optSG: 'Secrétaire Général', optSP: 'Secrétaire Particulier', optIG: 'Inspecteur Général',
+        optDAAJ: 'DAAJ — Division des Affaires Administratives et Juridiques',
+        optDAESC: 'DAESC — Division des Affaires Économiques, Sociales et Culturelles',
+        optDBR: 'DBR — Division du Budget et des Ressources',
+        optDPOA: 'DPOA — Division de la Programmation et des Opérations Administratives'
+      },
+      en: {
+        navRegion: 'Governor\'s Services — South Region',
+        pubH: 'Audience Request', pubSub: 'Fill in the form below.',
+        fname: 'First name', lname: 'Last name', phone: 'Phone number', email: 'Email address',
+        vtype: 'Visitor type', optSel: '-- Select --', optInd: 'Individual', optOth: 'Other',
+        specify: 'Please specify', target: 'Audience requested with',
+        purpose: 'Purpose of visit', purposeLimit: '50 words maximum', date: 'Preferred date',
+        btnSubmit: 'Submit request',
+        sucH: 'Request submitted', sucP: 'Your request has been received. You will be contacted by SMS and email once a decision has been made.',
+        btnNew: 'New request',
+        errRequired: 'This field is required.', errPhone: 'Invalid format. Ex: +2376XXXXXXXX or 6XXXXXXXX', errEmail: 'Invalid email address.', errWords: 'Maximum 50 words.', errChars: 'Maximum 600 characters for the purpose of visit.', errDate: 'Please select a future date.',
+        optGov: 'Governor', optSG: 'Secretary General', optSP: 'Private Secretary', optIG: 'Inspector General',
+        optDAAJ: 'DAAJ — Division of Administrative and Legal Affairs',
+        optDAESC: 'DAESC — Division of Economic, Social and Cultural Affairs',
+        optDBR: 'DBR — Division of Budget and Resources',
+        optDPOA: 'DPOA — Division of Planning and Administrative Operations'
+      }
+    };
+    function t(k) { return T[lang][k] || k }
+
+    var greetings = ['Bienvenue', 'Welcome'];
+    var gi = 0;
+    setInterval(function () {
+      gi = (gi + 1) % greetings.length;
+      var el = document.getElementById('w-greeting');
+      el.style.opacity = '0';
+      setTimeout(function () { el.textContent = greetings[gi]; el.style.opacity = '1'; }, 350);
+    }, 2500);
+
+    function enterApp(l) {
+      lang = l;
+      document.getElementById('welcome').classList.add('hidden');
+      document.getElementById('app').classList.add('visible');
+      applyLang();
+      renderPublicForm();
+    }
+
+    function toggleLang() {
+      lang = lang === 'fr' ? 'en' : 'fr';
+      document.getElementById('lang-toggle').textContent = lang === 'fr' ? 'EN' : 'FR';
+      applyLang();
+      renderPublicForm();
+    }
+
+    function applyLang() {
+      document.getElementById('nav-region').textContent = t('navRegion');
+      document.getElementById('lang-toggle').textContent = lang === 'fr' ? 'EN' : 'FR';
+    }
+
+    function renderPublicForm() {
+      document.getElementById('pub-h').textContent = t('pubH');
+      document.getElementById('pub-sub').textContent = t('pubSub');
+      document.getElementById('lbl-fname').childNodes[0].textContent = t('fname') + ' ';
+      document.getElementById('lbl-lname').childNodes[0].textContent = t('lname') + ' ';
+      document.getElementById('lbl-phone').childNodes[0].textContent = t('phone') + ' ';
+      document.getElementById('lbl-email').textContent = t('email');
+      document.getElementById('lbl-vtype').childNodes[0].textContent = t('vtype') + ' ';
+      document.getElementById('lbl-specify').childNodes[0].textContent = t('specify') + ' ';
+      document.getElementById('lbl-target').childNodes[0].textContent = t('target') + ' ';
+      document.getElementById('lbl-purpose').childNodes[0].textContent = t('purpose') + ' ';
+      document.getElementById('lbl-purpose-limit').textContent = '(' + t('purposeLimit') + ')';
+      document.getElementById('lbl-date').childNodes[0].textContent = t('date') + ' ';
+      document.getElementById('btn-submit').textContent = t('btnSubmit');
+      document.getElementById('suc-h').textContent = t('sucH');
+      document.getElementById('suc-p').textContent = t('sucP');
+      document.getElementById('btn-new').textContent = t('btnNew');
+      document.getElementById('staff-access-link').textContent = lang === 'fr' ? 'Accès staff' : 'Staff access';
+      document.getElementById('inp-fname').placeholder = 'Jean-Paul';
+      document.getElementById('inp-lname').placeholder = 'Mbarga';
+      document.getElementById('inp-specify').placeholder = lang === 'fr' ? 'Ex: Délégué régional, ONG, Représentant ministériel...' : 'E.g. Regional delegate, NGO, ministry representative...';
+      document.getElementById('inp-purpose').placeholder = lang === 'fr' ? 'Décrivez brièvement l\'objet de votre visite...' : 'Briefly describe the purpose of your visit...';
+      document.getElementById('opt-sel').textContent = t('optSel');
+      document.getElementById('opt-ind').textContent = t('optInd');
+      document.getElementById('opt-oth').textContent = t('optOth');
+      var tgt = document.getElementById('inp-target');
+      tgt.innerHTML = '<option value="">' + t('optSel') + '</option>' +
+        '<option value="gov">' + t('optGov') + '</option>' +
+        '<option value="sg">' + t('optSG') + '</option>' +
+        '<option value="sp">' + t('optSP') + '</option>' +
+        '<option value="ig">' + t('optIG') + '</option>' +
+        '<option value="daaj">' + t('optDAAJ') + '</option>' +
+        '<option value="daesc">' + t('optDAESC') + '</option>' +
+        '<option value="dbr">' + t('optDBR') + '</option>' +
+        '<option value="dpoa">' + t('optDPOA') + '</option>';
+    }
+
+    function vtypeChange() {
+      var v = document.getElementById('inp-vtype').value;
+      document.getElementById('other-specify-group').style.display = v === 'other' ? 'block' : 'none';
+    }
+
+    function countWords() {
+      var txt = document.getElementById('inp-purpose').value.trim();
+      var words = txt === '' ? 0 : txt.split(/\s+/).length;
+      var el = document.getElementById('word-count');
+      el.textContent = words + ' / 50';
+      el.classList.toggle('over', words > 50);
+    }
+
+    function ensureSupabaseClient() {
+      var cfg = window.AUDIENCEGOV_CONFIG || {};
+      if (!cfg.supabaseUrl || !cfg.supabaseAnonKey || !window.supabase) {
+        return null;
+      }
+      if (!supabaseClient) {
+        supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      }
+      return supabaseClient;
+    }
+
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    document.addEventListener('DOMContentLoaded', function () {
+      var dateInput = document.getElementById('inp-date');
+      if (dateInput) dateInput.min = today.toISOString().split('T')[0];
+    });
+
+    function validateEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+    function validatePhone(p) { return /^(\+237)?6[0-9]{8}$/.test(p.replace(/\s/g, '')); }
+    function wordCount(s) { var trimmed = s.trim(); return trimmed === '' ? 0 : trimmed.split(/\s+/).length; }
+    function normalizePhone(value) { return String(value || '').replace(/\s+/g, '').replace(/[^0-9+]/g, ''); }
+    function getBlockedDates() {
+      try {
+        var raw = localStorage.getItem(blockDatesKey) || '[]';
+        return JSON.parse(raw);
+      } catch (e) {
+        return [];
+      }
+    }
+    function isDateBlocked(date) {
+      if (!date) return false;
+      return getBlockedDates().indexOf(date) !== -1;
+    }
+    function isPastDate(dateString) {
+      if (!dateString) return false;
+      var selected = new Date(dateString + 'T00:00:00');
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return selected < today;
+    }
+    function hasDuplicateRecentRequest(phone, target) {
+      return false;
+    }
+
+    function showErr(id, msg) {
+      document.getElementById('err-' + id).textContent = msg;
+      document.getElementById('err-' + id).classList.add('show');
+      document.getElementById('inp-' + id).classList.add('error');
+    }
+    function clearErr(id) {
+      document.getElementById('err-' + id).classList.remove('show');
+      document.getElementById('inp-' + id).classList.remove('error');
+    }
+
+    async function submitRequest() {
+      var ok = true;
+      ['fname', 'lname', 'vtype', 'target', 'date'].forEach(function (f) { clearErr(f); });
+      clearErr('phone'); clearErr('email'); clearErr('purpose');
+      var fname = document.getElementById('inp-fname').value.trim();
+      var lname = document.getElementById('inp-lname').value.trim();
+      var phone = document.getElementById('inp-phone').value.trim();
+      var email = document.getElementById('inp-email').value.trim();
+      var vtype = document.getElementById('inp-vtype').value;
+      var specify = document.getElementById('inp-specify').value.trim();
+      var target = document.getElementById('inp-target').value;
+      var purpose = document.getElementById('inp-purpose').value.trim();
+      var date = document.getElementById('inp-date').value;
+      if (!fname) { showErr('fname', t('errRequired')); ok = false; }
+      if (!lname) { showErr('lname', t('errRequired')); ok = false; }
+      if (!phone) { showErr('phone', t('errRequired')); ok = false; }
+      else if (!validatePhone(phone)) { showErr('phone', t('errPhone')); ok = false; }
+      if (email && !validateEmail(email)) { showErr('email', t('errEmail')); ok = false; }
+      if (!vtype) { showErr('vtype', t('errRequired')); ok = false; }
+      if (vtype === 'other' && !specify) { showErr('specify', t('errRequired')); ok = false; }
+      if (!target) { showErr('target', t('errRequired')); ok = false; }
+      if (!purpose) { showErr('purpose', t('errRequired')); ok = false; }
+      else {
+        if (wordCount(purpose) > 50) { showErr('purpose', t('errWords')); ok = false; }
+        if (purpose.length > 600) { showErr('purpose', t('errChars')); ok = false; }
+      }
+      if (!date) { showErr('date', t('errRequired')); ok = false; }
+      else if (isPastDate(date)) { showErr('date', t('errDate')); ok = false; }
+      else if (isDateBlocked(date)) {
+        showErr('date', 'This date is unavailable. Please choose another date.');
+        ok = false;
+      }
+      if (!ok) return;
+      var client = ensureSupabaseClient();
+      if (!client) {
+        showToast('Supabase configuration is missing. Add the project variables before deployment.');
+        return;
+      }
+      var result = await client.from('requests').insert({
+        first_name: fname,
+        last_name: lname,
+        phone: phone,
+        email: email || null,
+        visitor_type: vtype,
+        visitor_detail: vtype === 'other' ? specify : null,
+        target_official: target,
+        purpose: purpose,
+        preferred_date: date
+      });
+      if (result.error) {
+        console.error('Request submission failed:', result.error);
+        showToast(lang === 'fr' ? 'Impossible d\'envoyer la demande. Réessayez.' : 'The request could not be submitted. Please try again.');
+        return;
+      }
+      document.getElementById('public-form-wrap').style.display = 'none';
+      document.getElementById('public-success').style.display = 'block';
+    }
+
+    function newRequest() {
+      document.getElementById('public-form-wrap').style.display = 'block';
+      document.getElementById('public-success').style.display = 'none';
+      ['fname', 'lname', 'phone', 'email', 'purpose'].forEach(function (f) { document.getElementById('inp-' + f).value = ''; });
+      document.getElementById('inp-vtype').value = '';
+      document.getElementById('inp-specify').value = '';
+      document.getElementById('inp-target').value = '';
+      document.getElementById('inp-date').value = '';
+      document.getElementById('other-specify-group').style.display = 'none';
+      document.getElementById('word-count').textContent = '0 / 50';
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      document.getElementById('inp-date').min = today.toISOString().split('T')[0];
+    }
+
+    function showToast(msg) {
+      var el = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      el.classList.add('show');
+      setTimeout(function () { el.classList.remove('show'); }, 3000);
+    }
+  </script>
+</body>
+
+</html>

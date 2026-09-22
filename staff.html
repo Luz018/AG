@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudienceGov Staff</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+        window.AUDIENCEGOV_CONFIG = window.AUDIENCEGOV_CONFIG || {
+            supabaseUrl: '',
+            supabaseAnonKey: ''
+        };
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --blue-dark: #042C53;
+            --blue-mid: #0C447C;
+            --blue: #185FA5;
+            --blue-light: #E6F1FB;
+            --blue-border: #85B7EB;
+            --green-bg: #EAF3DE;
+
+            --green-text: #3B6D11;
+            --green-border: #97C459;
+            --red-bg: #FCEBEB;
+            --red-text: #A32D2D;
+            --red-border: #F09595;
+            --amber-bg: #FAEEDA;
+            --amber-text: #854F0B;
+            --amber-border: #FAC775;
+            --surface: #fff;
+            --surface-1: #f5f5f3;
+            --surface-2: #eeede9;
+            --text: #1a1a18;
+            --text-secondary: #5f5e5a;
+            --text-muted: #888780;
+            --border: rgba(0, 0, 0, 0.12);
+            --border-strong: rgba(0, 0, 0, 0.22);
+            --radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0efe9;
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .top-nav {
+            background: var(--blue-dark);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            height: 60px;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-coat {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+        }
+
+        .nav-coat img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: brightness(0) invert(1) opacity(0.85);
+        }
+
+        .nav-titles {
+            flex: 1;
+        }
+
+        .nav-app {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .nav-region {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+        }
+
+        .tab-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            padding: 0 16px;
+            position: sticky;
+            top: 60px;
+            z-index: 40;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 14px 18px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: var(--blue-mid);
+            border-bottom-color: var(--blue-mid);
+            font-weight: 500;
+        }
+
+        .panel {
+            display: none;
+            padding: 28px 24px;
+            max-width: 680px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .section-heading {
+            margin-bottom: 22px;
+        }
+
+        .section-heading h2 {
+            font-size: 19px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .card-name {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .card-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 6px 0 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .card-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-purpose {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            background: var(--surface-1);
+            border-radius: 6px;
+            border-left: 3px solid var(--blue-border);
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .badge.pending {
+            background: var(--amber-bg);
+            color: var(--amber-text);
+        }
+
+        .badge.approved {
+            background: var(--green-bg);
+            color: var(--green-text);
+        }
+
+        .badge.rejected {
+            background: var(--red-bg);
+            color: var(--red-text);
+        }
+
+        .badge.delegated {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .action-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 8px 14px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-approve {
+            background: var(--green-bg);
+            color: var(--green-text);
+            border-color: var(--green-border);
+        }
+
+        .btn-reject {
+            background: var(--red-bg);
+            color: var(--red-text);
+            border-color: var(--red-border);
+        }
+
+        .btn-delegate {
+            background: var(--blue-light);
+            color: var(--blue);
+            border-color: var(--blue-border);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 26px;
+            font-weight: 500;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 20px 0;
+        }
+
+        .hod-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .hod-table th {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .hod-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hod-bar {
+            height: 6px;
+            border-radius: 99px;
+            background: var(--blue-light);
+            margin-top: 4px;
+        }
+
+        .hod-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: var(--blue);
+        }
+
+        .history-note {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: var(--surface-1);
+            border-radius: 6px;
+        }
+
+        .year-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .year-selector select {
+            padding: 7px 12px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius);
+            font-size: 13px;
+            background: var(--surface);
+            color: var(--text);
+            outline: none;
+        }
+
+        .pin-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 44, 83, .92);
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pin-box {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 32px;
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+        }
+
+        .pin-coat {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 16px;
+        }
+
+        .pin-coat img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .pin-box h3 {
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .pin-box p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .pin-input {
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+            font-size: 22px;
+            letter-spacing: 8px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius);
+            outline: none;
+            font-family: monospace;
+        }
+
+        .pin-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(24, 95, 165, .1);
+        }
+
+        .pin-error {
+            font-size: 12px;
+            color: var(--red-text);
+            margin-top: 6px;
+            min-height: 18px;
+        }
+
+        .btn-pin {
+            width: 100%;
+            margin-top: 14px;
+            padding: 12px;
+            background: var(--blue-mid);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .compose-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            z-index: 300;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 16px;
+            overflow-y: auto;
+        }
+
+        .compose-overlay.open {
+            display: flex;
+        }
+
+        .reschedule-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            z-index: 300;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 16px;
+            overflow-y: auto;
+        }
+
+        .reschedule-overlay.open {
+            display: flex;
+        }
+
+        .reschedule-box {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .reschedule-box h3 {
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .reschedule-box p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .reschedule-box input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius);
+            font-size: 14px;
+            color: var(--text);
+            background: var(--surface);
+            outline: none;
+        }
+
+        .compose-box {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 560px;
+        }
+
+        .compose-box h3 {
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .compose-box .compose-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .compose-to {
+            padding: 10px 14px;
+            background: var(--surface-1);
+            border-radius: var(--radius);
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .compose-textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius);
+            font-size: 14px;
+            color: var(--text);
+            background: var(--surface);
+            font-family: inherit;
+            min-height: 220px;
+            resize: vertical;
+            outline: none;
+            line-height: 1.7;
+        }
+
+        .compose-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 11px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius);
+            background: none;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .btn-send-reject {
+            flex: 2;
+            padding: 11px;
+            background: var(--red-text);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 28px;
+            max-width: 380px;
+            width: 100%;
+        }
+
+        .modal h3 {
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .modal p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+        }
+
+        .delegate-opt {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .delegate-opt.selected {
+            border-color: var(--blue);
+            background: var(--blue-light);
+        }
+
+        .delegate-avatar {
+            width: 34px;
+            height: 34px;
+            background: var(--surface-2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .delegate-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .delegate-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn-modal-cancel {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius);
+            background: none;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .btn-modal-confirm {
+            flex: 1;
+            padding: 10px;
+            background: var(--blue-mid);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px 24px;
+            color: var(--text-muted);
+        }
+
+        .toast {
+            position: fixed;
+            top: 76px;
+            right: 24px;
+            background: var(--blue-dark);
+            color: #fff;
+            padding: 13px 18px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+            transform: translateX(120%);
+            transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        @media(max-width:600px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .panel {
+                padding: 20px 14px;
+            }
+
+            .tab {
+                padding: 12px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toast" id="toast"><span id="toast-msg"></span></div>
+
+    <div class="pin-overlay" id="pin-overlay">
+        <div class="pin-box">
+            <div class="pin-coat"><img
+                    src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Coat_of_arms_of_Cameroon.svg"
+                    alt="Coat of arms"></div>
+            <h3 id="pin-title">Accès réservé</h3>
+            <p id="pin-sub">Connectez-vous avec votre email professionnel pour accéder au tableau de bord.</p>
+            <input type="email" class="pin-input" id="pin-email" placeholder="nom@bureau.cm" oninput="pinInput()">
+            <input type="password" class="pin-input" id="pin-password" placeholder="••••••••" oninput="pinInput()"
+                style="margin-top:10px;letter-spacing:1px">
+            <div class="pin-error" id="pin-error"></div>
+            <button class="btn-pin" id="pin-btn" onclick="checkPin()">Se connecter</button>
+        </div>
+    </div>
+
+    <div class="compose-overlay" id="compose-overlay">
+        <div class="compose-box">
+            <h3 id="compose-title">Composer une réponse</h3>
+            <p class="compose-sub" id="compose-sub">Cette réponse sera envoyée par email et SMS au visiteur.</p>
+            <div class="compose-to" id="compose-to"></div>
+            <textarea class="compose-textarea" id="compose-textarea"
+                placeholder="Rédigez votre message ici..."></textarea>
+            <div class="compose-actions">
+                <button class="btn-cancel" id="compose-cancel" onclick="closeCompose()">Annuler</button>
+                <button class="btn-send-reject" id="compose-send" onclick="confirmReject()">Envoyer le rejet</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="reschedule-overlay" id="reschedule-overlay">
+        <div class="reschedule-box">
+            <h3 id="reschedule-title">Reprogrammer l'audience</h3>
+            <p id="reschedule-sub">Choisissez une nouvelle date pour cet entretien approuvé.</p>
+            <input type="date" id="reschedule-date">
+            <div class="compose-actions">
+                <button class="btn-cancel" id="reschedule-cancel" onclick="closeReschedule()">Annuler</button>
+                <button class="btn-send-reject" id="reschedule-confirm" onclick="confirmReschedule()">Enregistrer la
+                    nouvelle date</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="delegate-modal">
+        <div class="modal">
+            <h3 id="del-title">Déléguer l'audience</h3>
+            <p id="del-sub">Choisissez le représentant pour cette audience.</p>
+            <div class="delegate-opt" onclick="selectDelegate('sg')" id="dopt-sg">
+                <div class="delegate-avatar">SG</div>
+                <div>
+                    <div class="delegate-title" id="del-sg-t">Secrétaire Général</div>
+                    <div class="delegate-sub" id="del-sg-s">Affaires administratives générales</div>
+                </div>
+            </div>
+            <div class="delegate-opt" onclick="selectDelegate('ig')" id="dopt-ig">
+                <div class="delegate-avatar">IG</div>
+                <div>
+                    <div class="delegate-title" id="del-ig-t">Inspecteur Général</div>
+                    <div class="delegate-sub" id="del-ig-s">Missions d'inspection et contrôle</div>
+                </div>
+            </div>
+            <div class="delegate-opt" onclick="selectDelegate('cc')" id="dopt-cc">
+                <div class="delegate-avatar">CC</div>
+                <div>
+                    <div class="delegate-title" id="del-cc-t">Chef de Cabinet</div>
+                    <div class="delegate-sub" id="del-cc-s">Audiences protocolaires</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" id="del-cancel" onclick="closeDelegate()">Annuler</button>
+                <button class="btn-modal-confirm" id="del-confirm" onclick="confirmDelegate()">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app">
+        <nav class="top-nav">
+            <div class="nav-coat"><img
+                    src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Coat_of_arms_of_Cameroon.svg"
+                    alt="Coat of arms"></div>
+            <div class="nav-titles">
+                <div class="nav-app">AudienceGov</div>
+                <div class="nav-region" id="nav-region">Services du Gouverneur — Région du Sud</div>
+            </div>
+            <div class="lang-toggle" onclick="toggleLang()" id="lang-toggle">EN</div>
+        </nav>
+        <div class="tab-bar">
+            <div class="tab active" onclick="switchTab('sdg')" id="tab-sdg"><span id="tab-sdg-label">SDG</span></div>
+            <div class="tab" onclick="switchTab('stats')" id="tab-stats"><span id="tab-stats-label">Statistiques</span>
+            </div>
+        </div>
+
+        <div class="panel active" id="panel-sdg">
+            <div class="section-heading">
+                <h2 id="sdg-heading">Tableau de bord</h2>
+            </div>
+            <div id="sdg-list"></div>
+        </div>
+
+        <div class="panel" id="panel-stats">
+            <div class="section-heading">
+                <h2 id="stats-heading">Statistiques & Historique</h2>
+            </div>
+            <div class="stats-grid" id="stats-grid"></div>
+            <div class="divider"></div>
+            <h3 id="hod-heading" style="font-size:15px;font-weight:500;margin-bottom:14px">Fréquence des demandes par
+                service</h3>
+            <table class="hod-table" id="hod-table"></table>
+            <div class="divider"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                <h3 id="history-heading" style="font-size:15px;font-weight:500">Historique</h3>
+                <div class="year-selector"><select id="year-select" onchange="renderHistory()"></select></div>
+            </div>
+            <div id="history-list"></div>
+            <p class="history-note" id="history-note">L'historique est conservé sur une base annuelle et se réinitialise
+                automatiquement
+                le 1er janvier de chaque année.</p>
+        </div>
+    </div>
+
+    <script>
+        var lang = 'fr';
+        var T = {
+            fr: { region: 'Services du Gouverneur — Région du Sud', tabStats: 'Statistiques', dashboard: 'Tableau de bord', stats: 'Statistiques & Historique', frequency: 'Fréquence des demandes par service', history: 'Historique', note: 'L\'historique est conservé sur une base annuelle et se réinitialise automatiquement le 1er janvier de chaque année.', login: 'Accès réservé', loginSub: 'Connectez-vous avec votre email professionnel pour accéder au tableau de bord.', loginButton: 'Se connecter', received: 'Reçu le', type: 'Type', audience: 'Audience avec', individual: 'Personne physique', pending: 'En attente', approved: 'Approuvée', approve: 'Approuver', reject: 'Rejeter', delegate: 'Déléguer', reschedule: 'Reprogrammer', empty: 'Aucune demande en attente', emptyHistory: 'Aucun enregistrement pour cette période.', service: 'Service', requests: 'Demandes', rejected: 'Rejetée', rescheduled: 'Reprogrammée', rescheduleTitle: 'Reprogrammer l\'audience', rescheduleSub: 'Choisissez une nouvelle date pour cet entretien approuvé.', saveDate: 'Enregistrer la nouvelle date' },
+            en: { region: 'Governor\'s Services — South Region', tabStats: 'Statistics', dashboard: 'Dashboard', stats: 'Statistics & History', frequency: 'Request frequency by service', history: 'History', note: 'History is kept on an annual basis and resets automatically on January 1st each year.', login: 'Restricted access', loginSub: 'Sign in with your work email to access the dashboard.', loginButton: 'Sign in', received: 'Received on', type: 'Type', audience: 'Audience with', individual: 'Individual', pending: 'Pending', approved: 'Approved', approve: 'Approve', reject: 'Reject', delegate: 'Delegate', reschedule: 'Reschedule', empty: 'No pending requests', emptyHistory: 'No records for this period.', service: 'Service', requests: 'Requests', rejected: 'Rejected', rescheduled: 'Rescheduled', rescheduleTitle: 'Reschedule audience', rescheduleSub: 'Choose a new date for this approved appointment.', saveDate: 'Save new date' }
+        };
+        function t(key) { return T[lang][key] || key; }
+        function toggleLang() { lang = lang === 'fr' ? 'en' : 'fr'; applyLang(); renderSDG(); renderStats(); renderHistory(); }
+        function applyLang() {
+            document.documentElement.lang = lang;
+            document.getElementById('lang-toggle').textContent = lang === 'fr' ? 'EN' : 'FR';
+            document.getElementById('nav-region').textContent = t('region');
+            document.getElementById('tab-stats-label').textContent = t('tabStats');
+            document.getElementById('sdg-heading').textContent = t('dashboard');
+            document.getElementById('stats-heading').textContent = t('stats');
+            document.getElementById('hod-heading').textContent = t('frequency');
+            document.getElementById('history-heading').textContent = t('history');
+            document.getElementById('history-note').textContent = t('note');
+            renderStatsLabels();
+            document.getElementById('pin-title').textContent = t('login');
+            document.getElementById('pin-sub').textContent = t('loginSub');
+            document.getElementById('pin-btn').textContent = t('loginButton');
+            document.getElementById('reschedule-title').textContent = t('rescheduleTitle');
+            document.getElementById('reschedule-sub').textContent = t('rescheduleSub');
+            document.getElementById('reschedule-confirm').textContent = t('saveDate');
+        }
+        function renderStatsLabels() {
+            var labels = document.querySelectorAll('#stats-grid .stat-label');
+            if (labels.length >= 4) {
+                labels[0].textContent = t('pending');
+                labels[1].textContent = t('approved') + (lang === 'fr' ? 's' : '');
+                labels[2].textContent = t('rejected') + (lang === 'fr' ? 'es' : '');
+                labels[3].textContent = lang === 'fr' ? 'Déléguées / Reprogrammées' : 'Delegated / Rescheduled';
+            }
+        }
+        var pinUnlocked = false;
+        var pendingTab = 'sdg';
+        var selectedDelegate = null;
+        var rejectTargetId = null;
+        var delegateTargetId = null;
+        var supabaseClient = null;
+        var requestHistory = [];
+        var rescheduleTargetId = null;
+        function initSupabaseAuth() {
+            var cfg = window.AUDIENCEGOV_CONFIG || {};
+            if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) {
+                console.warn('Supabase configuration missing. Staff authentication is disabled until deploy-time variables are configured.');
+                return;
+            }
+            if (!window.supabase) {
+                console.warn('Supabase JS SDK is not available.');
+                return;
+            }
+            supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+        }
+        function mapRequest(row) {
+            var targetLabels = { gov: { fr: 'Gouverneur', en: 'Governor' }, sg: { fr: 'Secrétaire Général', en: 'Secretary General' }, sp: { fr: 'Secrétaire Particulier', en: 'Private Secretary' }, ig: { fr: 'Inspecteur Général', en: 'Inspector General' }, daaj: { fr: 'DAAJ', en: 'DAAJ' }, daesc: { fr: 'DAESC', en: 'DAESC' }, dbr: { fr: 'DBR', en: 'DBR' }, dpoa: { fr: 'DPOA', en: 'DPOA' } };
+            return { id: row.id, fname: row.first_name, lname: row.last_name, phone: row.phone, email: row.email || '', vtype: row.visitor_type, vtypeLabel: row.visitor_detail || '', target: row.target_official, targetLabel: targetLabels[row.target_official] || { fr: row.target_official, en: row.target_official }, purpose: row.purpose, date: row.preferred_date, status: row.status, delegateTo: row.delegate_to, rejectMsg: row.reject_reason, ts: row.created_at };
+        }
+        function mapHistory(row) {
+            var targetLabels = { gov: { fr: 'Gouverneur', en: 'Governor' }, sg: { fr: 'Secrétaire Général', en: 'Secretary General' }, sp: { fr: 'Secrétaire Particulier', en: 'Private Secretary' }, ig: { fr: 'Inspecteur Général', en: 'Inspector General' }, daaj: { fr: 'DAAJ', en: 'DAAJ' }, daesc: { fr: 'DAESC', en: 'DAESC' }, dbr: { fr: 'DBR', en: 'DBR' }, dpoa: { fr: 'DPOA', en: 'DPOA' } };
+            return { id: row.request_id || row.id, fname: row.requests ? row.requests.first_name : '', lname: row.requests ? row.requests.last_name : '', phone: row.requests ? row.requests.phone : '', email: row.requests ? row.requests.email : '', target: row.requests ? row.requests.target_official : '', targetLabel: targetLabels[row.requests ? row.requests.target_official : ''] || { fr: '', en: '' }, purpose: row.requests ? row.requests.purpose : '', originalDate: row.original_date, newDate: row.rescheduled_date, status: row.status, rejectMsg: row.reason, ts: row.created_at };
+        }
+        async function loadStaffData() {
+            var requestResult = await supabaseClient.from('requests').select('*').order('created_at', { ascending: false });
+            if (requestResult.error) throw new Error('requests: ' + requestResult.error.message);
+            var historyResult = await supabaseClient.from('history').select('*, requests(first_name,last_name,phone,email,target_official,purpose)').order('created_at', { ascending: false });
+            if (historyResult.error) throw new Error('history: ' + historyResult.error.message);
+            requests = (requestResult.data || []).map(mapRequest);
+            requestHistory = (historyResult.data || []).map(mapHistory);
+            renderSDG();
+            renderStats();
+            renderHistory();
+        }
+        function requestInternalAccess(tab) { if (pinUnlocked) { switchTab(tab); return; } pendingTab = tab; document.getElementById('pin-email').value = ''; document.getElementById('pin-password').value = ''; document.getElementById('pin-error').textContent = ''; document.getElementById('pin-overlay').style.display = 'flex'; setTimeout(function () { document.getElementById('pin-email').focus(); }, 200); }
+        function pinInput() { document.getElementById('pin-error').textContent = ''; }
+        async function checkPin() {
+            var email = document.getElementById('pin-email').value.trim();
+            var password = document.getElementById('pin-password').value;
+            if (!email || !password) { document.getElementById('pin-error').textContent = 'Veuillez saisir votre email et votre mot de passe.'; return; }
+            if (!supabaseClient) { document.getElementById('pin-error').textContent = 'La configuration Supabase est manquante. Ajoutez les variables du projet avant le déploiement.'; return; }
+            try {
+                var { data, error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+                if (error) throw error;
+                if (data && data.user) {
+                    try {
+                        await loadStaffData();
+                    } catch (err) {
+                        document.getElementById('pin-error').textContent = (lang === 'fr' ? 'Connexion réussie, mais impossible de charger les demandes: ' : 'Signed in, but requests could not be loaded: ') + (err.message || (lang === 'fr' ? 'erreur inconnue' : 'unknown error'));
+                        return;
+                    }
+                    pinUnlocked = true;
+                    document.getElementById('pin-overlay').style.display = 'none';
+                    switchTab(pendingTab || 'sdg');
+                }
+            } catch (err) {
+                document.getElementById('pin-error').textContent = err && err.message ? err.message : 'Échec de connexion. Vérifiez vos identifiants.';
+                document.getElementById('pin-password').value = '';
+            }
+        }
+        document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && document.getElementById('pin-overlay').style.display === 'flex') checkPin(); });
+        function switchTab(name) {
+            ['sdg', 'stats'].forEach(function (n) {
+                document.getElementById('panel-' + n).classList.toggle('active', n === name);
+                document.getElementById('tab-' + n).classList.toggle('active', n === name);
+            });
+            if (name === 'sdg') renderSDG();
+            if (name === 'stats') { renderStats(); renderHistory(); }
+        }
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+        function renderSDG() {
+            var active = requests.filter(function (r) { return r.status === 'pending' || r.status === 'approved'; });
+            var list = document.getElementById('sdg-list');
+            if (active.length === 0) { list.innerHTML = '<div class="empty"><p>' + t('empty') + '</p></div>'; return; }
+            list.innerHTML = active.map(function (r) {
+                var vtl = r.vtype === 'other' ? r.vtypeLabel : t('individual');
+                var badge = r.status === 'approved' ? '<span class="badge approved">' + t('approved') + '</span>' : '<span class="badge pending">' + t('pending') + '</span>';
+                var actions = r.status === 'approved'
+                    ? '<div class="action-row"><button class="action-btn btn-delegate" onclick="openReschedule(' + JSON.stringify(r.id) + ')">↺ ' + t('reschedule') + '</button><button class="action-btn btn-reject" onclick="openCompose(' + JSON.stringify(r.id) + ')">✕ ' + t('reject') + '</button></div>'
+                    : '<div class="action-row"><button class="action-btn btn-approve" onclick="approveReq(' + JSON.stringify(r.id) + ')">✓ ' + t('approve') + '</button><button class="action-btn btn-delegate" onclick="openDelegate(' + JSON.stringify(r.id) + ')">⇄ ' + t('delegate') + '</button><button class="action-btn btn-reject" onclick="openCompose(' + JSON.stringify(r.id) + ')">✕ ' + t('reject') + '</button></div>';
+                return '<div class="card">' +
+                    '<div class="card-header"><div><div class="card-name">' + esc(r.fname) + ' ' + esc(r.lname) + '</div></div>' + badge + '</div>' +
+                    '<div class="card-meta"><span class="card-meta-item">📅 ' + t('received') + ': ' + fmtTS(r.ts) + '</span><span class="card-meta-item">👤 ' + t('type') + ': ' + esc(vtl) + '</span><span class="card-meta-item">🎯 ' + t('audience') + ': ' + r.targetLabel[lang] + '</span><span class="card-meta-item">📞 ' + esc(r.phone) + '</span>' + (r.email ? '<span class="card-meta-item">✉ ' + esc(r.email) + '</span>' : '') + '<span class="card-meta-item">📆 ' + fmtDate(r.date) + '</span></div>' +
+                    '<div class="card-purpose">' + esc(r.purpose) + '</div>' +
+                    actions +
+                    '</div>';
+            }).join('');
+        }
+        function fmtDate(iso) { var d = new Date(iso); return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }); }
+        function fmtTS(iso) { var d = new Date(iso); return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); }
+        async function approveReq(id) { var result = await supabaseClient.from('requests').update({ status: 'approved' }).eq('id', id); if (result.error) { showToast(lang === 'fr' ? 'Échec de la mise à jour' : 'Update failed'); return; } var r = requests.find(function (x) { return x.id === id; }); if (r) { r.status = 'approved'; } showToast(lang === 'fr' ? 'Audience approuvée' : 'Audience approved'); renderSDG(); }
+        function openCompose(id) { rejectTargetId = id; var r = requests.find(function (x) { return x.id === id; }); document.getElementById('compose-to').textContent = 'À : ' + r.fname + ' ' + r.lname + (r.email ? ' — ' + r.email : '') + ' · ' + r.phone; document.getElementById('compose-textarea').value = ''; document.getElementById('compose-overlay').classList.add('open'); setTimeout(function () { document.getElementById('compose-textarea').focus(); }, 200); }
+        function closeCompose() { document.getElementById('compose-overlay').classList.remove('open'); }
+        async function confirmReject() {
+            var msg = document.getElementById('compose-textarea').value.trim(); var r = requests.find(function (x) { return x.id === rejectTargetId; }); if (!r) return;
+            var historyResult = await supabaseClient.from('history').insert({ request_id: r.id, original_date: r.date, status: 'rejected', reason: msg, year: new Date(r.date).getFullYear() });
+            if (historyResult.error) { showToast('Échec de l\'enregistrement'); return; }
+            var requestResult = await supabaseClient.from('requests').update({ status: 'rejected', reject_reason: msg }).eq('id', r.id);
+            if (requestResult.error) { showToast('Échec de la mise à jour'); return; }
+            r.status = 'rejected'; r.rejectMsg = msg; requestHistory.push(Object.assign({}, r));
+            requests = requests.filter(function (x) { return x.id !== rejectTargetId; }); closeCompose(); showToast('Demande rejetée'); renderSDG(); renderStats(); renderHistory();
+        }
+        function openReschedule(id) {
+            rescheduleTargetId = id;
+            var r = requests.find(function (x) { return x.id === id; });
+            if (!r) return;
+            document.getElementById('reschedule-date').value = r.date;
+            document.getElementById('reschedule-overlay').classList.add('open');
+        }
+        function closeReschedule() {
+            document.getElementById('reschedule-overlay').classList.remove('open');
+            rescheduleTargetId = null;
+        }
+        async function confirmReschedule() {
+            var date = document.getElementById('reschedule-date').value;
+            if (!date) return;
+            var r = requests.find(function (x) { return x.id === rescheduleTargetId; });
+            if (!r) return;
+            if (date === r.date) {
+                closeReschedule();
+                showToast('La date n\'a pas changé');
+                return;
+            }
+            var historyResult = await supabaseClient.from('history').insert({ request_id: r.id, original_date: r.date, rescheduled_date: date, status: 'rescheduled', year: new Date(r.date).getFullYear() });
+            if (historyResult.error) { showToast('Échec de l\'enregistrement'); return; }
+            var requestResult = await supabaseClient.from('requests').update({ preferred_date: date, status: 'approved' }).eq('id', r.id);
+            if (requestResult.error) { showToast('Échec de la mise à jour'); return; }
+            requestHistory.push({ id: r.id, fname: r.fname, lname: r.lname, phone: r.phone, email: r.email, vtype: r.vtype, vtypeLabel: r.vtypeLabel, target: r.target, targetLabel: r.targetLabel, purpose: r.purpose, originalDate: r.date, newDate: date, status: 'rescheduled', delegateTo: r.delegateTo, rejectMsg: null, ts: new Date().toISOString() });
+            r.date = date;
+            closeReschedule();
+            showToast('Rendez-vous reprogrammé');
+            renderSDG();
+            renderStats();
+            renderHistory();
+        }
+        function openDelegate(id) { delegateTargetId = id; selectedDelegate = null; document.querySelectorAll('.delegate-opt').forEach(function (el) { el.classList.remove('selected'); }); document.getElementById('delegate-modal').classList.add('open'); }
+        function closeDelegate() { document.getElementById('delegate-modal').classList.remove('open'); }
+        function selectDelegate(who) { selectedDelegate = who; document.querySelectorAll('.delegate-opt').forEach(function (el) { el.classList.remove('selected'); }); document.getElementById('dopt-' + who).classList.add('selected'); }
+        async function confirmDelegate() { if (!selectedDelegate) return; var result = await supabaseClient.from('requests').update({ status: 'delegated', delegate_to: selectedDelegate }).eq('id', delegateTargetId); if (result.error) { showToast(lang === 'fr' ? 'Échec de la mise à jour' : 'Update failed'); return; } var r = requests.find(function (x) { return x.id === delegateTargetId; }); if (r) { r.status = 'delegated'; r.delegateTo = selectedDelegate; } closeDelegate(); showToast(lang === 'fr' ? 'Audience déléguée' : 'Audience delegated'); renderSDG(); renderStats(); }
+        function renderStats() {
+            var all = requests.concat(requestHistory); var pending = all.filter(function (r) { return r.status === 'pending'; }).length; var approved = all.filter(function (r) { return r.status === 'approved'; }).length; var rejected = all.filter(function (r) { return r.status === 'rejected'; }).length; var delegated = all.filter(function (r) { return r.status === 'delegated'; }).length; var rescheduled = all.filter(function (r) { return r.status === 'rescheduled'; }).length;
+            document.getElementById('stats-grid').innerHTML = '<div class="stat-card"><div class="stat-num" style="color:var(--blue)">' + pending + '</div><div class="stat-label">' + t('pending') + '</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:#3B6D11">' + approved + '</div><div class="stat-label">' + (lang === 'fr' ? 'Approuvées' : 'Approved') + '</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:#A32D2D">' + rejected + '</div><div class="stat-label">' + (lang === 'fr' ? 'Rejetées' : 'Rejected') + '</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:#854F0B">' + (delegated + rescheduled) + '</div><div class="stat-label">' + (lang === 'fr' ? 'Déléguées / Reprogrammées' : 'Delegated / Rescheduled') + '</div></div>';
+            var targets = ['gov', 'sg', 'sp', 'ig', 'daaj', 'daesc', 'dbr', 'dpoa']; var labels = { gov: { fr: 'Gouverneur', en: 'Governor' }, sg: { fr: 'Secrétaire Général', en: 'Secretary General' }, sp: { fr: 'Secrétaire Particulier', en: 'Private Secretary' }, ig: { fr: 'Inspecteur Général', en: 'Inspector General' }, daaj: { fr: 'DAAJ', en: 'DAAJ' }, daesc: { fr: 'DAESC', en: 'DAESC' }, dbr: { fr: 'DBR', en: 'DBR' }, dpoa: { fr: 'DPOA', en: 'DPOA' } }; var counts = {}; targets.forEach(function (k) { counts[k] = 0; }); all.forEach(function (r) { if (counts[r.target] !== undefined) counts[r.target]++; }); var max = Math.max.apply(null, Object.values(counts)) || 1; document.getElementById('hod-table').innerHTML = '<tr><th>' + t('service') + '</th><th>' + t('requests') + '</th></tr>' + targets.filter(function (k) { return counts[k] > 0; }).sort(function (a, b) { return counts[b] - counts[a]; }).map(function (k) { var pct = Math.round(counts[k] / max * 100); return '<tr><td><strong>' + labels[k][lang] + '</strong><div class="hod-bar"><div class="hod-bar-fill" style="width:' + pct + '%"></div></div></td><td>' + counts[k] + '</td></tr>'; }).join('');
+        }
+        function populateYears() { var yr = new Date().getFullYear(); var sel = document.getElementById('year-select'); sel.innerHTML = ''; for (var y = yr; y >= yr - 2; y--) { var o = document.createElement('option'); o.value = y; o.textContent = y; sel.appendChild(o); } }
+        function renderHistory() { var yr = parseInt(document.getElementById('year-select').value); var items = requestHistory.filter(function (r) { return new Date(r.ts).getFullYear() === yr; }); var list = document.getElementById('history-list'); if (items.length === 0) { list.innerHTML = '<div class="empty"><p>' + t('emptyHistory') + '</p></div>'; return; } list.innerHTML = items.map(function (r) { var label = r.status === 'rescheduled' ? t('rescheduled') : t('rejected'); var badgeClass = r.status === 'rescheduled' ? 'delegated' : 'rejected'; var detail = r.status === 'rescheduled' ? '<div style="font-size:12px;color:var(--blue);margin-top:8px;padding:8px 12px;background:var(--blue-light);border-radius:6px">' + (lang === 'fr' ? 'Date originale' : 'Original date') + ': ' + fmtDate(r.originalDate) + ' → ' + (lang === 'fr' ? 'Nouvelle date' : 'New date') + ': ' + fmtDate(r.newDate) + '</div>' : (r.rejectMsg ? '<div style="font-size:12px;color:var(--red-text);margin-top:8px;padding:8px 12px;background:var(--red-bg);border-radius:6px">↳ ' + esc(r.rejectMsg) + '</div>' : ''); return '<div class="card"><div class="card-header"><div class="card-name">' + esc(r.fname) + ' ' + esc(r.lname) + '</div><span class="badge ' + badgeClass + '">' + label + '</span></div><div class="card-meta"><span>' + fmtTS(r.ts) + '</span><span>' + r.targetLabel[lang] + '</span></div><div class="card-purpose">' + esc(r.purpose) + '</div>' + detail + '</div>'; }).join(''); }
+        function showToast(msg) { var el = document.getElementById('toast'); document.getElementById('toast-msg').textContent = msg; el.classList.add('show'); setTimeout(function () { el.classList.remove('show'); }, 3000); }
+        initSupabaseAuth(); populateYears(); requestInternalAccess('sdg');
+    </script>
+</body>
+
+</html>
