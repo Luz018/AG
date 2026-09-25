@@ -890,6 +890,47 @@
                 return;
             }
             supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+            supabaseClient.auth.onAuthStateChange(function (event, session) {
+                if (event === 'SIGNED_OUT' || event === 'USER_DELETED' || !session) {
+                    pinUnlocked = false;
+                    document.getElementById('pin-overlay').style.display = 'flex';
+                    document.getElementById('pin-email').value = '';
+                    document.getElementById('pin-password').value = '';
+                    document.getElementById('pin-error').textContent = '';
+                    return;
+                }
+                if (session && session.user) {
+                    pinUnlocked = true;
+                    document.getElementById('pin-overlay').style.display = 'none';
+                    if (!requests || requests.length === 0) {
+                        loadStaffData().catch(function (err) {
+                            console.error('Session restored but data could not be loaded:', err);
+                        });
+                    }
+                    switchTab(pendingTab || 'sdg');
+                }
+            });
+        }
+        async function initializeAuthFlow() {
+            if (!supabaseClient) {
+                requestInternalAccess('sdg');
+                return;
+            }
+            try {
+                var { data: { session }, error } = await supabaseClient.auth.getSession();
+                if (error) throw error;
+                if (session && session.user) {
+                    pinUnlocked = true;
+                    document.getElementById('pin-overlay').style.display = 'none';
+                    await loadStaffData();
+                    switchTab(pendingTab || 'sdg');
+                    return;
+                }
+                requestInternalAccess('sdg');
+            } catch (err) {
+                console.warn('No valid Supabase session found on page load:', err);
+                requestInternalAccess('sdg');
+            }
         }
         function mapRequest(row) {
             var targetLabels = { gov: { fr: 'Gouverneur', en: 'Governor' }, sg: { fr: 'Secrétaire Général', en: 'Secretary General' }, sp: { fr: 'Secrétaire Particulier', en: 'Private Secretary' }, ig: { fr: 'Inspecteur Général', en: 'Inspector General' }, daaj: { fr: 'DAAJ', en: 'DAAJ' }, daesc: { fr: 'DAESC', en: 'DAESC' }, dbr: { fr: 'DBR', en: 'DBR' }, dpoa: { fr: 'DPOA', en: 'DPOA' } };
@@ -1027,7 +1068,7 @@
         function populateYears() { var yr = new Date().getFullYear(); var sel = document.getElementById('year-select'); sel.innerHTML = ''; for (var y = yr; y >= yr - 2; y--) { var o = document.createElement('option'); o.value = y; o.textContent = y; sel.appendChild(o); } }
         function renderHistory() { var yr = parseInt(document.getElementById('year-select').value); var items = requestHistory.filter(function (r) { return new Date(r.ts).getFullYear() === yr; }); var list = document.getElementById('history-list'); if (items.length === 0) { list.innerHTML = '<div class="empty"><p>' + t('emptyHistory') + '</p></div>'; return; } list.innerHTML = items.map(function (r) { var label = r.status === 'rescheduled' ? t('rescheduled') : t('rejected'); var badgeClass = r.status === 'rescheduled' ? 'delegated' : 'rejected'; var detail = r.status === 'rescheduled' ? '<div style="font-size:12px;color:var(--blue);margin-top:8px;padding:8px 12px;background:var(--blue-light);border-radius:6px">' + (lang === 'fr' ? 'Date originale' : 'Original date') + ': ' + fmtDate(r.originalDate) + ' → ' + (lang === 'fr' ? 'Nouvelle date' : 'New date') + ': ' + fmtDate(r.newDate) + '</div>' : (r.rejectMsg ? '<div style="font-size:12px;color:var(--red-text);margin-top:8px;padding:8px 12px;background:var(--red-bg);border-radius:6px">↳ ' + esc(r.rejectMsg) + '</div>' : ''); return '<div class="card"><div class="card-header"><div class="card-name">' + esc(r.fname) + ' ' + esc(r.lname) + '</div><span class="badge ' + badgeClass + '">' + label + '</span></div><div class="card-meta"><span>' + fmtTS(r.ts) + '</span><span>' + r.targetLabel[lang] + '</span></div><div class="card-purpose">' + esc(r.purpose) + '</div>' + detail + '</div>'; }).join(''); }
         function showToast(msg) { var el = document.getElementById('toast'); document.getElementById('toast-msg').textContent = msg; el.classList.add('show'); setTimeout(function () { el.classList.remove('show'); }, 3000); }
-        initSupabaseAuth(); populateYears(); requestInternalAccess('sdg');
+        initSupabaseAuth(); populateYears(); initializeAuthFlow();
     </script>
 </body>
 
