@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
   <meta charset="UTF-8">
@@ -1067,7 +1067,7 @@
     <p class="w-sub">Services du Gouverneur · Governor's Services<br>Région du Sud · South Region</p>
     <div class="lang-row">
       <button class="lang-btn primary" onclick="enterApp('fr')">Français</button>
-      <button class="lang-btn" onclick="enterApp('en')">English</button>
+      <button class="lang-btn" lang="en" onclick="enterApp('en')">English</button>
     </div>
     <p class="w-flag">🇨🇲 République du Cameroun · Republic of Cameroon</p>
   </div>
@@ -1308,6 +1308,7 @@
     }
 
     function applyLang() {
+      document.documentElement.lang = lang;
       document.getElementById('nav-region').textContent = t('navRegion');
       document.getElementById('lang-toggle').textContent = lang === 'fr' ? 'EN' : 'FR';
     }
