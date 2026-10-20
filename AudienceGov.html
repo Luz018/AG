@@ -386,6 +386,63 @@
       transform: scale(.99)
     }
 
+    .duplicate-warning {
+      margin-top: 16px;
+      padding: 14px;
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      border-radius: var(--radius);
+      color: var(--amber-text);
+      font-size: 13px;
+      line-height: 1.5
+    }
+
+    .duplicate-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px
+    }
+
+    .duplicate-actions button,
+    .lookup-action {
+      padding: 8px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer
+    }
+
+    .duplicate-actions button:last-child,
+    .lookup-action {
+      background: var(--blue-mid);
+      border-color: var(--blue-mid);
+      color: #fff
+    }
+
+    .lookup-section {
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid var(--border)
+    }
+
+    .lookup-result,
+    .lookup-message {
+      margin-top: 14px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary)
+    }
+
+    .lookup-result p {
+      margin-bottom: 4px
+    }
+
+    .lookup-message {
+      color: var(--green-text)
+    }
+
     /* TOAST */
     .toast {
       position: fixed;
@@ -954,6 +1011,19 @@
       margin-bottom: 24px
     }
 
+    .success-ref {
+      display: none;
+      background: var(--blue-light);
+      border: 1px solid var(--blue-border);
+      color: var(--blue-dark);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 18px;
+      line-height: 1.6
+    }
+
     .btn-new-request {
       padding: 11px 28px;
       background: var(--blue-mid);
@@ -1090,6 +1160,13 @@
             <div class="field-error" id="err-date"></div>
           </div>
         </div>
+        <div class="duplicate-warning" id="duplicate-warning" style="display:none">
+          <p id="duplicate-message"></p>
+          <div class="duplicate-actions">
+            <button type="button" id="duplicate-cancel" onclick="cancelDuplicateSubmit()"></button>
+            <button type="button" id="duplicate-confirm" onclick="confirmDuplicateSubmit()"></button>
+          </div>
+        </div>
         <button class="btn-primary" onclick="submitRequest()">
           <span id="btn-submit">Envoyer la demande</span>
         </button>
@@ -1098,11 +1175,37 @@
         <div class="success-screen">
           <div class="success-icon">✓</div>
           <h3 id="suc-h">Demande envoyée</h3>
-          <p id="suc-p">Votre demande a été reçue. Vous serez contacté par SMS et email dès qu'une décision sera prise.
+          <p id="suc-p">Votre demande a été reçue. Vous serez contacté par email dès qu'une décision sera prise.
           </p>
+          <div class="success-ref" id="suc-ref"></div>
           <button class="btn-new-request" id="btn-new" onclick="newRequest()">Nouvelle demande</button>
         </div>
       </div>
+      <section class="lookup-section">
+        <div class="section-heading">
+          <h2 id="lookup-heading"></h2>
+          <p id="lookup-subheading"></p>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label id="lookup-reference-label" for="lookup-reference"></label>
+            <input type="text" id="lookup-reference" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label id="lookup-phone-label" for="lookup-phone"></label>
+            <input type="tel" id="lookup-phone" autocomplete="tel">
+          </div>
+        </div>
+        <button class="lookup-action" type="button" id="lookup-button" onclick="lookupRequest()"></button>
+        <div class="lookup-result" id="lookup-result" style="display:none">
+          <p id="lookup-status"></p>
+          <p id="lookup-target"></p>
+          <p id="lookup-date"></p>
+          <button class="lookup-action" type="button" id="reschedule-button" onclick="requestReschedule()" style="display:none"></button>
+          <p class="lookup-message" id="lookup-message" style="display:none"></p>
+        </div>
+        <p class="lookup-message" id="lookup-error" style="display:none"></p>
+      </section>
       <div style="text-align:center; margin-top:22px; padding-bottom:14px;">
         <a href="staff.html" id="staff-access-link" style="font-size:12px; color:var(--text-muted); text-decoration:none;">Accès staff</a>
       </div>
@@ -1113,6 +1216,10 @@
     var lang = 'fr';
     var supabaseClient = null;
     var blockDatesKey = 'audiencegov_blocked_dates';
+    var lastReferenceNumber = '';
+    var pendingRequest = null;
+    var lookupData = null;
+    var rescheduleNotified = false;
 
     var T = {
       fr: {
@@ -1123,7 +1230,13 @@
         specify: 'Précisez', target: 'Audience souhaitée avec',
         purpose: 'Objet de la visite', purposeLimit: '50 mots maximum', date: 'Date souhaitée',
         btnSubmit: 'Envoyer la demande',
+        duplicateWarning: 'Vous avez peut-être déjà une demande récente auprès de ce bureau. Soumettre quand même ?', duplicateCancel: 'Annuler', duplicateConfirm: 'Soumettre quand même',
+        lookupHeading: 'Vérifier ma demande', lookupSubheading: 'Saisissez votre numéro de référence et votre numéro de téléphone.', lookupReference: 'Numéro de référence', lookupPhone: 'Numéro de téléphone', lookupButton: 'Vérifier le statut',
+        lookupStatus: 'Statut', lookupTarget: 'Bureau demandé', lookupDate: 'Date', lookupNoMatch: 'Aucune demande correspondante trouvée — vérifiez votre numéro de référence et votre numéro de téléphone.', lookupError: 'Impossible de vérifier la demande. Réessayez.',
+        reschedule: 'Je ne peux pas venir / demander un report', rescheduleConfirmation: 'Le bureau a été informé de votre demande de report.', rescheduleError: 'Impossible d’informer le bureau. Réessayez.',
+        statusPending: 'En attente', statusApproved: 'Approuvée', statusRejected: 'Refusée', statusDelegated: 'Déléguée',
         sucH: 'Demande envoyée', sucP: 'Votre demande a été reçue. Vous serez contacté par SMS et email dès qu\'une décision sera prise.',
+        refLabel: 'Votre numéro de référence', refHelp: 'veuillez le conserver pour tout suivi.',
         btnNew: 'Nouvelle demande',
         errRequired: 'Ce champ est obligatoire.', errPhone: 'Format invalide. Ex: +2376XXXXXXXX ou 6XXXXXXXX', errEmail: 'Adresse email invalide.', errWords: 'Maximum 50 mots.', errChars: 'Maximum 600 caractères pour l\'objet de la visite.', errDate: 'Veuillez sélectionner une date future.',
         optGov: 'Gouverneur', optSG: 'Secrétaire Général', optSP: 'Secrétaire Particulier', optIG: 'Inspecteur Général',
@@ -1140,7 +1253,13 @@
         specify: 'Please specify', target: 'Audience requested with',
         purpose: 'Purpose of visit', purposeLimit: '50 words maximum', date: 'Preferred date',
         btnSubmit: 'Submit request',
-        sucH: 'Request submitted', sucP: 'Your request has been received. You will be contacted by SMS and email once a decision has been made.',
+        duplicateWarning: 'You may already have a recent request with this office. Submit anyway?', duplicateCancel: 'Cancel', duplicateConfirm: 'Submit Anyway',
+        lookupHeading: 'Check my request', lookupSubheading: 'Enter your reference number and phone number.', lookupReference: 'Reference number', lookupPhone: 'Phone number', lookupButton: 'Check status',
+        lookupStatus: 'Status', lookupTarget: 'Requested office', lookupDate: 'Date', lookupNoMatch: 'No matching request found — check your reference number and phone number.', lookupError: 'Unable to check the request. Please try again.',
+        reschedule: "I can't make it / reschedule please", rescheduleConfirmation: 'The office has been notified of your reschedule request.', rescheduleError: 'The office could not be notified. Please try again.',
+        statusPending: 'Pending', statusApproved: 'Approved', statusRejected: 'Rejected', statusDelegated: 'Delegated',
+        sucH: 'Request submitted', sucP: 'Your request has been received. You will be contacted byemail once a decision has been made.',
+        refLabel: 'Your reference number', refHelp: 'please keep this for any follow-up.',
         btnNew: 'New request',
         errRequired: 'This field is required.', errPhone: 'Invalid format. Ex: +2376XXXXXXXX or 6XXXXXXXX', errEmail: 'Invalid email address.', errWords: 'Maximum 50 words.', errChars: 'Maximum 600 characters for the purpose of visit.', errDate: 'Please select a future date.',
         optGov: 'Governor', optSG: 'Secretary General', optSP: 'Private Secretary', optIG: 'Inspector General',
@@ -1151,6 +1270,18 @@
       }
     };
     function t(k) { return T[lang][k] || k }
+
+    function renderSuccessReference() {
+      var refEl = document.getElementById('suc-ref');
+      if (!refEl) return;
+      if (!lastReferenceNumber) {
+        refEl.style.display = 'none';
+        refEl.textContent = '';
+        return;
+      }
+      refEl.style.display = 'block';
+      refEl.textContent = t('refLabel') + ': ' + lastReferenceNumber + ' — ' + t('refHelp');
+    }
 
     var greetings = ['Bienvenue', 'Welcome'];
     var gi = 0;
@@ -1197,8 +1328,19 @@
       document.getElementById('btn-submit').textContent = t('btnSubmit');
       document.getElementById('suc-h').textContent = t('sucH');
       document.getElementById('suc-p').textContent = t('sucP');
+      renderSuccessReference();
       document.getElementById('btn-new').textContent = t('btnNew');
       document.getElementById('staff-access-link').textContent = lang === 'fr' ? 'Accès staff' : 'Staff access';
+      document.getElementById('duplicate-message').textContent = t('duplicateWarning');
+      document.getElementById('duplicate-cancel').textContent = t('duplicateCancel');
+      document.getElementById('duplicate-confirm').textContent = t('duplicateConfirm');
+      document.getElementById('lookup-heading').textContent = t('lookupHeading');
+      document.getElementById('lookup-subheading').textContent = t('lookupSubheading');
+      document.getElementById('lookup-reference-label').textContent = t('lookupReference');
+      document.getElementById('lookup-phone-label').textContent = t('lookupPhone');
+      document.getElementById('lookup-button').textContent = t('lookupButton');
+      document.getElementById('reschedule-button').textContent = t('reschedule');
+      renderLookupResult();
       document.getElementById('inp-fname').placeholder = 'Jean-Paul';
       document.getElementById('inp-lname').placeholder = 'Mbarga';
       document.getElementById('inp-specify').placeholder = lang === 'fr' ? 'Ex: Délégué régional, ONG, Représentant ministériel...' : 'E.g. Regional delegate, NGO, ministry representative...';
@@ -1272,10 +1414,6 @@
       today.setHours(0, 0, 0, 0);
       return selected < today;
     }
-    function hasDuplicateRecentRequest(phone, target) {
-      return false;
-    }
-
     function showErr(id, msg) {
       document.getElementById('err-' + id).textContent = msg;
       document.getElementById('err-' + id).classList.add('show');
@@ -1324,7 +1462,32 @@
         showToast('Supabase configuration is missing. Add the project variables before deployment.');
         return;
       }
-      var result = await client.from('requests').insert({
+      var duplicateCheck = await client.rpc('has_recent_duplicate', {
+        p_phone: phone,
+        p_target: target
+      });
+      if (duplicateCheck.error) {
+        console.error('Duplicate request check failed:', duplicateCheck.error);
+        showToast(lang === 'fr' ? 'Impossible de vérifier les demandes récentes. Réessayez.' : 'Could not check for recent requests. Please try again.');
+        return;
+      }
+      var isDuplicate = duplicateCheck.data === true || (Array.isArray(duplicateCheck.data) && duplicateCheck.data[0] === true);
+      if (isDuplicate) {
+        pendingRequest = {
+          first_name: fname,
+          last_name: lname,
+          phone: phone,
+          email: email || null,
+          visitor_type: vtype,
+          visitor_detail: vtype === 'other' ? specify : null,
+          target_official: target,
+          purpose: purpose,
+          preferred_date: date
+        };
+        document.getElementById('duplicate-warning').style.display = 'block';
+        return;
+      }
+      await insertRequest(client, {
         first_name: fname,
         last_name: lname,
         phone: phone,
@@ -1335,18 +1498,116 @@
         purpose: purpose,
         preferred_date: date
       });
+    }
+
+    async function confirmDuplicateSubmit() {
+      if (!pendingRequest) return;
+      var client = ensureSupabaseClient();
+      if (!client) return;
+      var request = pendingRequest;
+      pendingRequest = null;
+      document.getElementById('duplicate-warning').style.display = 'none';
+      await insertRequest(client, request);
+    }
+
+    function cancelDuplicateSubmit() {
+      pendingRequest = null;
+      document.getElementById('duplicate-warning').style.display = 'none';
+    }
+
+    async function insertRequest(client, request) {
+      var result = await client.from('requests').insert(request).select();
       if (result.error) {
         console.error('Request submission failed:', result.error);
         showToast(lang === 'fr' ? 'Impossible d\'envoyer la demande. Réessayez.' : 'The request could not be submitted. Please try again.');
         return;
       }
+      var insertedRow = (result.data && result.data[0]) || null;
+      lastReferenceNumber = insertedRow && insertedRow.reference_number ? String(insertedRow.reference_number) : '';
+      renderSuccessReference();
       document.getElementById('public-form-wrap').style.display = 'none';
       document.getElementById('public-success').style.display = 'block';
     }
 
+    function getLookupRow(data) {
+      if (Array.isArray(data)) return data[0] || null;
+      return data && typeof data === 'object' ? data : null;
+    }
+
+    function renderLookupResult() {
+      if (!lookupData) return;
+      var status = String(lookupData.status || '');
+      var statusKey = 'status' + status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+      var statusText = T[lang][statusKey] || status;
+      var target = lookupData.target_official || lookupData.target || '';
+      var targetKeys = { gov: 'optGov', sg: 'optSG', sp: 'optSP', ig: 'optIG', daaj: 'optDAAJ', daesc: 'optDAESC', dbr: 'optDBR', dpoa: 'optDPOA' };
+      var targetKey = targetKeys[String(target).toLowerCase()];
+      var targetText = T[lang][targetKey] || target;
+      var requestDate = lookupData.preferred_date || lookupData.request_date || lookupData.date || lookupData.created_at || '';
+      var dateText = requestDate ? new Date(requestDate).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB') : '';
+      document.getElementById('lookup-status').textContent = t('lookupStatus') + ': ' + statusText;
+      document.getElementById('lookup-target').textContent = t('lookupTarget') + ': ' + targetText;
+      document.getElementById('lookup-date').textContent = t('lookupDate') + ': ' + dateText;
+      var canReschedule = status.toLowerCase() === 'pending' || status.toLowerCase() === 'approved';
+      document.getElementById('reschedule-button').style.display = canReschedule ? 'inline-block' : 'none';
+      document.getElementById('lookup-message').textContent = rescheduleNotified ? t('rescheduleConfirmation') : '';
+      document.getElementById('lookup-message').style.display = rescheduleNotified ? 'block' : 'none';
+    }
+
+    async function lookupRequest() {
+      var reference = document.getElementById('lookup-reference').value.trim();
+      var phone = document.getElementById('lookup-phone').value.trim();
+      var resultEl = document.getElementById('lookup-result');
+      var errorEl = document.getElementById('lookup-error');
+      resultEl.style.display = 'none';
+      errorEl.style.display = 'none';
+      lookupData = null;
+      rescheduleNotified = false;
+      var client = ensureSupabaseClient();
+      if (!client) {
+        errorEl.textContent = lang === 'fr' ? 'La configuration Supabase est manquante.' : 'Supabase configuration is missing.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      var lookup = await client.rpc('lookup_request', { p_reference: reference, p_phone: phone });
+      if (lookup.error) {
+        console.error('Request lookup failed:', lookup.error);
+        errorEl.textContent = t('lookupError');
+        errorEl.style.display = 'block';
+        return;
+      }
+      lookupData = getLookupRow(lookup.data);
+      if (!lookupData) {
+        errorEl.textContent = t('lookupNoMatch');
+        errorEl.style.display = 'block';
+        return;
+      }
+      resultEl.style.display = 'block';
+      renderLookupResult();
+    }
+
+    async function requestReschedule() {
+      var reference = document.getElementById('lookup-reference').value.trim();
+      var phone = document.getElementById('lookup-phone').value.trim();
+      var client = ensureSupabaseClient();
+      if (!client) return;
+      var result = await client.rpc('flag_reschedule_request', { p_reference: reference, p_phone: phone });
+      if (result.error) {
+        console.error('Reschedule request failed:', result.error);
+        var messageEl = document.getElementById('lookup-message');
+        messageEl.textContent = t('rescheduleError');
+        messageEl.style.display = 'block';
+        return;
+      }
+      rescheduleNotified = true;
+      renderLookupResult();
+    }
+
     function newRequest() {
+      lastReferenceNumber = '';
       document.getElementById('public-form-wrap').style.display = 'block';
       document.getElementById('public-success').style.display = 'none';
+      renderSuccessReference();
       ['fname', 'lname', 'phone', 'email', 'purpose'].forEach(function (f) { document.getElementById('inp-' + f).value = ''; });
       document.getElementById('inp-vtype').value = '';
       document.getElementById('inp-specify').value = '';

@@ -216,6 +216,18 @@
             color: var(--blue);
         }
 
+        .badge.flagged {
+            background: var(--amber-bg);
+            color: var(--amber-text);
+        }
+
+        .card-badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+
         .action-row {
             display: flex;
             gap: 8px;
@@ -250,6 +262,12 @@
             background: var(--blue-light);
             color: var(--blue);
             border-color: var(--blue-border);
+        }
+
+        .btn-whatsapp {
+            background: var(--green-bg);
+            color: var(--green-text);
+            border-color: var(--green-border);
         }
 
         .stats-grid {
@@ -759,38 +777,6 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="delegate-modal">
-        <div class="modal">
-            <h3 id="del-title">Déléguer l'audience</h3>
-            <p id="del-sub">Choisissez le représentant pour cette audience.</p>
-            <div class="delegate-opt" onclick="selectDelegate('sg')" id="dopt-sg">
-                <div class="delegate-avatar">SG</div>
-                <div>
-                    <div class="delegate-title" id="del-sg-t">Secrétaire Général</div>
-                    <div class="delegate-sub" id="del-sg-s">Affaires administratives générales</div>
-                </div>
-            </div>
-            <div class="delegate-opt" onclick="selectDelegate('ig')" id="dopt-ig">
-                <div class="delegate-avatar">IG</div>
-                <div>
-                    <div class="delegate-title" id="del-ig-t">Inspecteur Général</div>
-                    <div class="delegate-sub" id="del-ig-s">Missions d'inspection et contrôle</div>
-                </div>
-            </div>
-            <div class="delegate-opt" onclick="selectDelegate('cc')" id="dopt-cc">
-                <div class="delegate-avatar">CC</div>
-                <div>
-                    <div class="delegate-title" id="del-cc-t">Chef de Cabinet</div>
-                    <div class="delegate-sub" id="del-cc-s">Audiences protocolaires</div>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-modal-cancel" id="del-cancel" onclick="closeDelegate()">Annuler</button>
-                <button class="btn-modal-confirm" id="del-confirm" onclick="confirmDelegate()">Confirmer</button>
-            </div>
-        </div>
-    </div>
-
     <div id="app">
         <nav class="top-nav">
             <div class="nav-coat"><img
@@ -839,8 +825,8 @@
     <script>
         var lang = 'fr';
         var T = {
-            fr: { region: 'Services du Gouverneur — Région du Sud', tabStats: 'Statistiques', dashboard: 'Tableau de bord', stats: 'Statistiques & Historique', frequency: 'Fréquence des demandes par service', history: 'Historique', note: 'L\'historique est conservé sur une base annuelle et se réinitialise automatiquement le 1er janvier de chaque année.', login: 'Accès réservé', loginSub: 'Connectez-vous avec votre email professionnel pour accéder au tableau de bord.', loginButton: 'Se connecter', received: 'Reçu le', type: 'Type', audience: 'Audience avec', individual: 'Personne physique', pending: 'En attente', approved: 'Approuvée', approve: 'Approuver', reject: 'Rejeter', delegate: 'Déléguer', reschedule: 'Reprogrammer', empty: 'Aucune demande en attente', emptyHistory: 'Aucun enregistrement pour cette période.', service: 'Service', requests: 'Demandes', rejected: 'Rejetée', rescheduled: 'Reprogrammée', rescheduleTitle: 'Reprogrammer l\'audience', rescheduleSub: 'Choisissez une nouvelle date pour cet entretien approuvé.', saveDate: 'Enregistrer la nouvelle date' },
-            en: { region: 'Governor\'s Services — South Region', tabStats: 'Statistics', dashboard: 'Dashboard', stats: 'Statistics & History', frequency: 'Request frequency by service', history: 'History', note: 'History is kept on an annual basis and resets automatically on January 1st each year.', login: 'Restricted access', loginSub: 'Sign in with your work email to access the dashboard.', loginButton: 'Sign in', received: 'Received on', type: 'Type', audience: 'Audience with', individual: 'Individual', pending: 'Pending', approved: 'Approved', approve: 'Approve', reject: 'Reject', delegate: 'Delegate', reschedule: 'Reschedule', empty: 'No pending requests', emptyHistory: 'No records for this period.', service: 'Service', requests: 'Requests', rejected: 'Rejected', rescheduled: 'Rescheduled', rescheduleTitle: 'Reschedule audience', rescheduleSub: 'Choose a new date for this approved appointment.', saveDate: 'Save new date' }
+            fr: { region: 'Services du Gouverneur — Région du Sud', tabStats: 'Statistiques', dashboard: 'Tableau de bord', stats: 'Statistiques & Historique', frequency: 'Fréquence des demandes par service', history: 'Historique', note: 'L\'historique est conservé sur une base annuelle et se réinitialise automatiquement le 1er janvier de chaque année.', login: 'Accès réservé', loginSub: 'Connectez-vous avec votre email professionnel pour accéder au tableau de bord.', loginButton: 'Se connecter', received: 'Reçu le', type: 'Type', audience: 'Audience avec', individual: 'Personne physique', pending: 'En attente', approved: 'Approuvée', approve: 'Approuver', reject: 'Rejeter', delegate: 'Déléguer', reschedule: 'Reprogrammer', empty: 'Aucune demande en attente', emptyHistory: 'Aucun enregistrement pour cette période.', service: 'Service', requests: 'Demandes', rejected: 'Rejetée', rescheduled: 'Reprogrammée', rescheduleTitle: 'Reprogrammer l\'audience', rescheduleSub: 'Choisissez une nouvelle date pour cet entretien approuvé.', saveDate: 'Enregistrer la nouvelle date', flaggedForReschedule: '⚠ Le citoyen demande un report', whatsapp: 'Message sur WhatsApp' },
+            en: { region: 'Governor\'s Services — South Region', tabStats: 'Statistics', dashboard: 'Dashboard', stats: 'Statistics & History', frequency: 'Request frequency by service', history: 'History', note: 'History is kept on an annual basis and resets automatically on January 1st each year.', login: 'Restricted access', loginSub: 'Sign in with your work email to access the dashboard.', loginButton: 'Sign in', received: 'Received on', type: 'Type', audience: 'Audience with', individual: 'Individual', pending: 'Pending', approved: 'Approved', approve: 'Approve', reject: 'Reject', delegate: 'Delegate', reschedule: 'Reschedule', empty: 'No pending requests', emptyHistory: 'No records for this period.', service: 'Service', requests: 'Requests', rejected: 'Rejected', rescheduled: 'Rescheduled', rescheduleTitle: 'Reschedule audience', rescheduleSub: 'Choose a new date for this approved appointment.', saveDate: 'Save new date', flaggedForReschedule: '⚠ Citizen requested reschedule', whatsapp: 'Message on WhatsApp' }
         };
         function t(key) { return T[lang][key] || key; }
         function toggleLang() { lang = lang === 'fr' ? 'en' : 'fr'; applyLang(); renderSDG(); renderStats(); renderHistory(); }
@@ -873,10 +859,9 @@
         }
         var pinUnlocked = false;
         var pendingTab = 'sdg';
-        var selectedDelegate = null;
         var rejectTargetId = null;
-        var delegateTargetId = null;
         var supabaseClient = null;
+        var requests = [];
         var requestHistory = [];
         var rescheduleTargetId = null;
         function initSupabaseAuth() {
@@ -934,7 +919,7 @@
         }
         function mapRequest(row) {
             var targetLabels = { gov: { fr: 'Gouverneur', en: 'Governor' }, sg: { fr: 'Secrétaire Général', en: 'Secretary General' }, sp: { fr: 'Secrétaire Particulier', en: 'Private Secretary' }, ig: { fr: 'Inspecteur Général', en: 'Inspector General' }, daaj: { fr: 'DAAJ', en: 'DAAJ' }, daesc: { fr: 'DAESC', en: 'DAESC' }, dbr: { fr: 'DBR', en: 'DBR' }, dpoa: { fr: 'DPOA', en: 'DPOA' } };
-            return { id: row.id, fname: row.first_name, lname: row.last_name, phone: row.phone, email: row.email || '', vtype: row.visitor_type, vtypeLabel: row.visitor_detail || '', target: row.target_official, targetLabel: targetLabels[row.target_official] || { fr: row.target_official, en: row.target_official }, purpose: row.purpose, date: row.preferred_date, status: row.status, delegateTo: row.delegate_to, rejectMsg: row.reject_reason, ts: row.created_at };
+            return { id: row.id, fname: row.first_name, lname: row.last_name, phone: row.phone, email: row.email || '', referenceNumber: row.reference_number, flaggedForReschedule: row.flagged_for_reschedule === true, vtype: row.visitor_type, vtypeLabel: row.visitor_detail || '', target: row.target_official, targetLabel: targetLabels[row.target_official] || { fr: row.target_official, en: row.target_official }, purpose: row.purpose, date: row.preferred_date, status: row.status, delegateTo: row.delegate_to, rejectMsg: row.reject_reason, ts: row.created_at };
         }
         function mapHistory(row) {
             var targetLabels = { gov: { fr: 'Gouverneur', en: 'Governor' }, sg: { fr: 'Secrétaire Général', en: 'Secretary General' }, sp: { fr: 'Secrétaire Particulier', en: 'Private Secretary' }, ig: { fr: 'Inspecteur Général', en: 'Inspector General' }, daaj: { fr: 'DAAJ', en: 'DAAJ' }, daesc: { fr: 'DAESC', en: 'DAESC' }, dbr: { fr: 'DBR', en: 'DBR' }, dpoa: { fr: 'DPOA', en: 'DPOA' } };
@@ -1000,14 +985,26 @@
                 var badge = r.status === 'approved' ? '<span class="badge approved">' + t('approved') + '</span>' : '<span class="badge pending">' + t('pending') + '</span>';
                 var actions = r.status === 'approved'
                     ? '<div class="action-row"><button class="action-btn btn-delegate" onclick="openReschedule(' + '\'' + r.id + '\'' + ')">↺ ' + t('reschedule') + '</button><button class="action-btn btn-reject" onclick="openCompose(' + '\'' + r.id + '\'' + ')">✕ ' + t('reject') + '</button></div>'
-                    : '<div class="action-row"><button class="action-btn btn-approve" onclick="approveReq(' + '\'' + r.id + '\'' + ')">✓ ' + t('approve') + '</button><button class="action-btn btn-delegate" onclick="openDelegate(' + '\'' + r.id + '\'' + ')">⇄ ' + t('delegate') + '</button><button class="action-btn btn-reject" onclick="openCompose(' + '\'' + r.id + '\'' + ')">✕ ' + t('reject') + '</button></div>';
+                    : '<div class="action-row"><button class="action-btn btn-approve" onclick="approveReq(' + '\'' + r.id + '\'' + ')">✓ ' + t('approve') + '</button><button class="action-btn btn-reject" onclick="openCompose(' + '\'' + r.id + '\'' + ')">✕ ' + t('reject') + '</button></div>';
+                var flaggedBadge = r.flaggedForReschedule ? '<span class="badge flagged">' + t('flaggedForReschedule') + '</span>' : '';
+                var whatsappButton = '<button class="action-btn btn-whatsapp" onclick="openWhatsApp(' + '\'' + r.id + '\'' + ')">' + t('whatsapp') + '</button>';
                 return '<div class="card">' +
-                    '<div class="card-header"><div><div class="card-name">' + esc(r.fname) + ' ' + esc(r.lname) + '</div></div>' + badge + '</div>' +
+                    '<div class="card-header"><div><div class="card-name">' + esc(r.fname) + ' ' + esc(r.lname) + '</div></div><div class="card-badges">' + badge + flaggedBadge + '</div></div>' +
                     '<div class="card-meta"><span class="card-meta-item">📅 ' + t('received') + ': ' + fmtTS(r.ts) + '</span><span class="card-meta-item">👤 ' + t('type') + ': ' + esc(vtl) + '</span><span class="card-meta-item">🎯 ' + t('audience') + ': ' + r.targetLabel[lang] + '</span><span class="card-meta-item">📞 ' + esc(r.phone) + '</span>' + (r.email ? '<span class="card-meta-item">✉ ' + esc(r.email) + '</span>' : '') + '<span class="card-meta-item">📆 ' + fmtDate(r.date) + '</span></div>' +
                     '<div class="card-purpose">' + esc(r.purpose) + '</div>' +
-                    actions +
+                    actions.replace('</div>', whatsappButton + '</div>') +
                     '</div>';
             }).join('');
+        }
+        function openWhatsApp(id) {
+            var r = requests.find(function (request) { return request.id === id; });
+            if (!r) return;
+            var phone = String(r.phone || '').replace(/[\s+]/g, '');
+            if (/^6\d{8}$/.test(phone)) phone = '237' + phone;
+            var greeting = lang === 'fr' ? 'Bonjour' : 'Hello';
+            var requestLabel = lang === 'fr' ? 'concernant votre demande' : 'regarding your request';
+            var message = greeting + ' ' + (r.fname || '') + ', ' + requestLabel + ' ' + (r.referenceNumber || '') + '...';
+            window.open('https://wa.me/' + encodeURIComponent(phone) + '?text=' + encodeURIComponent(message), '_blank', 'noopener,noreferrer');
         }
         function fmtDate(iso) { var d = new Date(iso); return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }); }
         function fmtTS(iso) { var d = new Date(iso); return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); }
@@ -1056,10 +1053,6 @@
             renderStats();
             renderHistory();
         }
-        function openDelegate(id) { delegateTargetId = id; selectedDelegate = null; document.querySelectorAll('.delegate-opt').forEach(function (el) { el.classList.remove('selected'); }); document.getElementById('delegate-modal').classList.add('open'); }
-        function closeDelegate() { document.getElementById('delegate-modal').classList.remove('open'); }
-        function selectDelegate(who) { selectedDelegate = who; document.querySelectorAll('.delegate-opt').forEach(function (el) { el.classList.remove('selected'); }); document.getElementById('dopt-' + who).classList.add('selected'); }
-        async function confirmDelegate() { if (!selectedDelegate) return; var result = await supabaseClient.from('requests').update({ status: 'delegated', delegate_to: selectedDelegate }).eq('id', delegateTargetId); if (result.error) { showToast(lang === 'fr' ? 'Échec de la mise à jour' : 'Update failed'); return; } var r = requests.find(function (x) { return x.id === delegateTargetId; }); if (r) { r.status = 'delegated'; r.delegateTo = selectedDelegate; } closeDelegate(); showToast(lang === 'fr' ? 'Audience déléguée' : 'Audience delegated'); renderSDG(); renderStats(); }
         function renderStats() {
             var all = requests.concat(requestHistory); var pending = all.filter(function (r) { return r.status === 'pending'; }).length; var approved = all.filter(function (r) { return r.status === 'approved'; }).length; var rejected = all.filter(function (r) { return r.status === 'rejected'; }).length; var delegated = all.filter(function (r) { return r.status === 'delegated'; }).length; var rescheduled = all.filter(function (r) { return r.status === 'rescheduled'; }).length;
             document.getElementById('stats-grid').innerHTML = '<div class="stat-card"><div class="stat-num" style="color:var(--blue)">' + pending + '</div><div class="stat-label">' + t('pending') + '</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:#3B6D11">' + approved + '</div><div class="stat-label">' + (lang === 'fr' ? 'Approuvées' : 'Approved') + '</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:#A32D2D">' + rejected + '</div><div class="stat-label">' + (lang === 'fr' ? 'Rejetées' : 'Rejected') + '</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:#854F0B">' + (delegated + rescheduled) + '</div><div class="stat-label">' + (lang === 'fr' ? 'Déléguées / Reprogrammées' : 'Delegated / Rescheduled') + '</div></div>';
