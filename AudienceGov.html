@@ -1109,18 +1109,18 @@
           <p id="pub-sub">Remplissez le formulaire ci-dessous.</p>
         </div>
         <div class="form-group">
-          <label id="lbl-fname">Prénom <span id="lbl-fname-req">*</span></label>
+          <label id="lbl-fname" for="inp-fname">Prénom <span id="lbl-fname-req">*</span></label>
           <input type="text" id="inp-fname" placeholder="Jean-Paul">
           <div class="field-error" id="err-fname"></div>
         </div>
         <div class="form-group">
-          <label id="lbl-lname">Nom de famille <span id="lbl-lname-req">*</span></label>
+          <label id="lbl-lname" for="inp-lname">Nom de famille <span id="lbl-lname-req">*</span></label>
           <input type="text" id="inp-lname" placeholder="Mbarga">
           <div class="field-error" id="err-lname"></div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label id="lbl-phone">Numéro de téléphone <span>*</span></label>
+            <label id="lbl-phone" for="inp-phone">Numéro de téléphone <span>*</span></label>
             <input type="tel" id="inp-phone" placeholder="+2376XXXXXXXX" maxlength="13">
             <div class="field-error" id="err-phone"></div>
           </div>
@@ -1136,7 +1136,7 @@
           <div class="field-error" id="err-email2"></div>
         </div>
         <div class="form-group">
-          <label id="lbl-vtype">Type de visiteur <span>*</span></label>
+          <label id="lbl-vtype" for="inp-vtype">Type de visiteur <span>*</span></label>
           <select id="inp-vtype" onchange="vtypeChange()">
             <option value="" id="opt-sel">-- Sélectionner --</option>
             <option value="individual" id="opt-ind">Personne physique</option>
@@ -1145,12 +1145,12 @@
           <div class="field-error" id="err-vtype"></div>
         </div>
         <div class="form-group" id="other-specify-group" style="display:none">
-          <label id="lbl-specify">Précisez <span>*</span></label>
+          <label id="lbl-specify" for="inp-specify">Précisez <span>*</span></label>
           <input type="text" id="inp-specify" placeholder="Ex: Délégué régional, ONG, Représentant ministériel...">
           <div class="field-error" id="err-specify"></div>
         </div>
         <div class="form-group">
-          <label id="lbl-target">Audience souhaitée avec <span>*</span></label>
+          <label id="lbl-target" for="inp-target">Audience souhaitée avec <span>*</span></label>
           <select id="inp-target">
             <option value="">-- Sélectionner --</option>
             <option value="gov" id="opt-gov">Gouverneur</option>
@@ -1167,7 +1167,7 @@
           <div class="field-error" id="err-target"></div>
         </div>
         <div class="form-group">
-          <label id="lbl-purpose">Objet de la visite <span id="lbl-purpose-limit">(50 mots maximum)</span></label>
+          <label id="lbl-purpose" for="inp-purpose">Objet de la visite <span id="lbl-purpose-limit">(50 mots maximum)</span></label>
           <textarea id="inp-purpose" rows="4" placeholder="Décrivez brièvement l'objet de votre visite..."
             oninput="countWords()"></textarea>
           <div class="word-count" id="word-count">0 / 50</div>
@@ -1175,7 +1175,7 @@
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label id="lbl-date">Date souhaitée <span>*</span></label>
+            <label id="lbl-date" for="inp-date">Date souhaitée <span>*</span></label>
             <input type="date" id="inp-date">
             <div class="field-error" id="err-date"></div>
           </div>
@@ -1446,16 +1446,20 @@
       document.getElementById('err-' + id).textContent = msg;
       document.getElementById('err-' + id).classList.add('show');
       document.getElementById('inp-' + id).classList.add('error');
+      document.getElementById('inp-' + id).setAttribute('aria-invalid', 'true');
+      document.getElementById('inp-' + id).setAttribute('aria-describedby', 'err-' + id);
     }
     function clearErr(id) {
       document.getElementById('err-' + id).classList.remove('show');
       document.getElementById('inp-' + id).classList.remove('error');
+      document.getElementById('inp-' + id).removeAttribute('aria-invalid');
+      document.getElementById('inp-' + id).removeAttribute('aria-describedby');
     }
 
     async function submitRequest() {
       var ok = true;
       ['fname', 'lname', 'vtype', 'target', 'date'].forEach(function (f) { clearErr(f); });
-      clearErr('phone'); clearErr('email'); clearErr('email2'); clearErr('purpose');
+      clearErr('phone'); clearErr('email'); clearErr('email2'); clearErr('purpose'); clearErr('specify');
       var fname = document.getElementById('inp-fname').value.trim();
       var lname = document.getElementById('inp-lname').value.trim();
       var phone = document.getElementById('inp-phone').value.trim();
