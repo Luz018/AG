@@ -1559,14 +1559,23 @@
     }
 
     async function insertRequest(client, request) {
-      var result = await client.from('requests').insert(request).select();
+      var result = await client.rpc('submit_request', {
+        p_first_name: request.first_name,
+        p_last_name: request.last_name,
+        p_phone: request.phone,
+        p_email: request.email,
+        p_visitor_type: request.visitor_type,
+        p_visitor_detail: request.visitor_detail,
+        p_target_official: request.target_official,
+        p_purpose: request.purpose,
+        p_preferred_date: request.preferred_date
+      });
       if (result.error) {
         console.error('Request submission failed:', result.error);
         showToast(lang === 'fr' ? 'Impossible d\'envoyer la demande. Réessayez.' : 'The request could not be submitted. Please try again.');
         return;
       }
-      var insertedRow = (result.data && result.data[0]) || null;
-      lastReferenceNumber = insertedRow && insertedRow.reference_number ? String(insertedRow.reference_number) : '';
+      lastReferenceNumber = typeof result.data === 'string' ? result.data : '';
       renderSuccessReference();
       document.getElementById('public-form-wrap').style.display = 'none';
       document.getElementById('public-success').style.display = 'block';
