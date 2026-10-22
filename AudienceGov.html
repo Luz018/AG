@@ -327,6 +327,21 @@
       border-color: var(--red-text)
     }
 
+    .hp-field {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden
+    }
+
+    .privacy-note {
+      margin-top: 16px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-secondary)
+    }
+
     .field-error {
       font-size: 11px;
       color: var(--red-text);
@@ -1110,10 +1125,15 @@
             <div class="field-error" id="err-phone"></div>
           </div>
           <div class="form-group">
-            <label id="lbl-email">Adresse email</label>
-            <input type="email" id="inp-email" placeholder="exemple@email.com">
+            <label id="lbl-email" for="inp-email">Adresse email <span>*</span></label>
+            <input type="email" id="inp-email" placeholder="exemple@email.com" autocomplete="email">
             <div class="field-error" id="err-email"></div>
           </div>
+        </div>
+        <div class="form-group">
+          <label id="lbl-email2" for="inp-email2">Confirmez l'adresse email <span>*</span></label>
+          <input type="email" id="inp-email2" placeholder="exemple@email.com" autocomplete="off">
+          <div class="field-error" id="err-email2"></div>
         </div>
         <div class="form-group">
           <label id="lbl-vtype">Type de visiteur <span>*</span></label>
@@ -1167,6 +1187,11 @@
             <button type="button" id="duplicate-confirm" onclick="confirmDuplicateSubmit()"></button>
           </div>
         </div>
+        <div class="hp-field" aria-hidden="true">
+          <label for="inp-website">Website</label>
+          <input type="text" id="inp-website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+        <p class="privacy-note" id="privacy-note"></p>
         <button class="btn-primary" onclick="submitRequest()">
           <span id="btn-submit">Envoyer la demande</span>
         </button>
@@ -1225,7 +1250,7 @@
       fr: {
         navRegion: 'Services du Gouverneur — Région du Sud',
         pubH: 'Demande d\'audience', pubSub: 'Remplissez le formulaire ci-dessous.',
-        fname: 'Prénom', lname: 'Nom de famille', phone: 'Numéro de téléphone', email: 'Adresse email',
+        fname: 'Prénom', lname: 'Nom de famille', phone: 'Numéro de téléphone', email: 'Adresse email', email2: 'Confirmez l’adresse email', errEmailMatch: 'Les deux adresses email ne correspondent pas.', privacy: 'Les informations saisies servent uniquement à traiter votre demande d’audience et sont consultées par le personnel du bureau. Elles ne sont pas publiées.',
         vtype: 'Type de visiteur', optSel: '-- Sélectionner --', optInd: 'Personne physique', optOth: 'Autre',
         specify: 'Précisez', target: 'Audience souhaitée avec',
         purpose: 'Objet de la visite', purposeLimit: '50 mots maximum', date: 'Date souhaitée',
@@ -1235,7 +1260,7 @@
         lookupStatus: 'Statut', lookupTarget: 'Bureau demandé', lookupDate: 'Date', lookupNoMatch: 'Aucune demande correspondante trouvée — vérifiez votre numéro de référence et votre numéro de téléphone.', lookupError: 'Impossible de vérifier la demande. Réessayez.',
         reschedule: 'Je ne peux pas venir / demander un report', rescheduleConfirmation: 'Le bureau a été informé de votre demande de report.', rescheduleError: 'Impossible d’informer le bureau. Réessayez.',
         statusPending: 'En attente', statusApproved: 'Approuvée', statusRejected: 'Refusée', statusDelegated: 'Déléguée',
-        sucH: 'Demande envoyée', sucP: 'Votre demande a été reçue. Vous serez contacté par SMS et email dès qu\'une décision sera prise.',
+        sucH: 'Demande envoyée', sucP: 'Votre demande a été reçue. Vous serez contacté par email dès qu\'une décision sera prise.',
         refLabel: 'Votre numéro de référence', refHelp: 'veuillez le conserver pour tout suivi.',
         btnNew: 'Nouvelle demande',
         errRequired: 'Ce champ est obligatoire.', errPhone: 'Format invalide. Ex: +2376XXXXXXXX ou 6XXXXXXXX', errEmail: 'Adresse email invalide.', errWords: 'Maximum 50 mots.', errChars: 'Maximum 600 caractères pour l\'objet de la visite.', errDate: 'Veuillez sélectionner une date future.',
@@ -1248,7 +1273,7 @@
       en: {
         navRegion: 'Governor\'s Services — South Region',
         pubH: 'Audience Request', pubSub: 'Fill in the form below.',
-        fname: 'First name', lname: 'Last name', phone: 'Phone number', email: 'Email address',
+        fname: 'First name', lname: 'Last name', phone: 'Phone number', email2: 'Confirm email address', errEmailMatch: 'The two email addresses do not match.', privacy: 'The information you enter is used only to process your appointment request and is seen only by office staff. It is not published.', email: 'Email address',
         vtype: 'Visitor type', optSel: '-- Select --', optInd: 'Individual', optOth: 'Other',
         specify: 'Please specify', target: 'Audience requested with',
         purpose: 'Purpose of visit', purposeLimit: '50 words maximum', date: 'Preferred date',
@@ -1258,7 +1283,7 @@
         lookupStatus: 'Status', lookupTarget: 'Requested office', lookupDate: 'Date', lookupNoMatch: 'No matching request found — check your reference number and phone number.', lookupError: 'Unable to check the request. Please try again.',
         reschedule: "I can't make it / reschedule please", rescheduleConfirmation: 'The office has been notified of your reschedule request.', rescheduleError: 'The office could not be notified. Please try again.',
         statusPending: 'Pending', statusApproved: 'Approved', statusRejected: 'Rejected', statusDelegated: 'Delegated',
-        sucH: 'Request submitted', sucP: 'Your request has been received. You will be contacted byemail once a decision has been made.',
+        sucH: 'Request submitted', sucP: 'Your request has been received. You will be contacted by email once a decision has been made.',
         refLabel: 'Your reference number', refHelp: 'please keep this for any follow-up.',
         btnNew: 'New request',
         errRequired: 'This field is required.', errPhone: 'Invalid format. Ex: +2376XXXXXXXX or 6XXXXXXXX', errEmail: 'Invalid email address.', errWords: 'Maximum 50 words.', errChars: 'Maximum 600 characters for the purpose of visit.', errDate: 'Please select a future date.',
@@ -1319,7 +1344,9 @@
       document.getElementById('lbl-fname').childNodes[0].textContent = t('fname') + ' ';
       document.getElementById('lbl-lname').childNodes[0].textContent = t('lname') + ' ';
       document.getElementById('lbl-phone').childNodes[0].textContent = t('phone') + ' ';
-      document.getElementById('lbl-email').textContent = t('email');
+      document.getElementById('lbl-email').childNodes[0].textContent = t('email') + ' ';
+      document.getElementById('lbl-email2').childNodes[0].textContent = t('email2') + ' ';
+      document.getElementById('privacy-note').textContent = t('privacy');
       document.getElementById('lbl-vtype').childNodes[0].textContent = t('vtype') + ' ';
       document.getElementById('lbl-specify').childNodes[0].textContent = t('specify') + ' ';
       document.getElementById('lbl-target').childNodes[0].textContent = t('target') + ' ';
@@ -1428,11 +1455,12 @@
     async function submitRequest() {
       var ok = true;
       ['fname', 'lname', 'vtype', 'target', 'date'].forEach(function (f) { clearErr(f); });
-      clearErr('phone'); clearErr('email'); clearErr('purpose');
+      clearErr('phone'); clearErr('email'); clearErr('email2'); clearErr('purpose');
       var fname = document.getElementById('inp-fname').value.trim();
       var lname = document.getElementById('inp-lname').value.trim();
       var phone = document.getElementById('inp-phone').value.trim();
       var email = document.getElementById('inp-email').value.trim();
+      var email2 = document.getElementById('inp-email2').value.trim();
       var vtype = document.getElementById('inp-vtype').value;
       var specify = document.getElementById('inp-specify').value.trim();
       var target = document.getElementById('inp-target').value;
@@ -1442,7 +1470,9 @@
       if (!lname) { showErr('lname', t('errRequired')); ok = false; }
       if (!phone) { showErr('phone', t('errRequired')); ok = false; }
       else if (!validatePhone(phone)) { showErr('phone', t('errPhone')); ok = false; }
-      if (email && !validateEmail(email)) { showErr('email', t('errEmail')); ok = false; }
+      if (!email) { showErr('email', t('errRequired')); ok = false; }
+      else if (!validateEmail(email)) { showErr('email', t('errEmail')); ok = false; }
+      else if (email.toLowerCase() !== email2.toLowerCase()) { showErr('email2', t('errEmailMatch')); ok = false; }
       if (!vtype) { showErr('vtype', t('errRequired')); ok = false; }
       if (vtype === 'other' && !specify) { showErr('specify', t('errRequired')); ok = false; }
       if (!target) { showErr('target', t('errRequired')); ok = false; }
@@ -1458,6 +1488,14 @@
         ok = false;
       }
       if (!ok) return;
+      if (document.getElementById('inp-website').value) {
+        // Honeypot filled: a bot. Show the success screen without sending anything.
+        lastReferenceNumber = '';
+        renderSuccessReference();
+        document.getElementById('public-form-wrap').style.display = 'none';
+        document.getElementById('public-success').style.display = 'block';
+        return;
+      }
       var client = ensureSupabaseClient();
       if (!client) {
         showToast('Supabase configuration is missing. Add the project variables before deployment.');
@@ -1609,7 +1647,7 @@
       document.getElementById('public-form-wrap').style.display = 'block';
       document.getElementById('public-success').style.display = 'none';
       renderSuccessReference();
-      ['fname', 'lname', 'phone', 'email', 'purpose'].forEach(function (f) { document.getElementById('inp-' + f).value = ''; });
+      ['fname', 'lname', 'phone', 'email', 'email2', 'purpose', 'website'].forEach(function (f) { document.getElementById('inp-' + f).value = ''; });
       document.getElementById('inp-vtype').value = '';
       document.getElementById('inp-specify').value = '';
       document.getElementById('inp-target').value = '';
