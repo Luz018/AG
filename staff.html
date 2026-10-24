@@ -775,11 +775,164 @@
                 font-size: 12px;
             }
         }
+        .btn-print {
+            background: var(--surface);
+            color: var(--text);
+            border-color: var(--border-strong);
+        }
+
+        /* ---- printable A4 summary: one request per page, no phone or email ---- */
+        #print-sheet {
+            display: none;
+        }
+
+        @page {
+            size: A4;
+            margin: 16mm;
+        }
+
+        @media print {
+            body>:not(#print-sheet) {
+                display: none !important;
+            }
+
+            body {
+                background: #fff;
+            }
+
+            #print-sheet {
+                display: block;
+                color: #000;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 11.5pt;
+                line-height: 1.45;
+            }
+
+            #print-sheet h1 {
+                font-size: 17pt;
+                font-weight: 700;
+                margin: 2mm 0 6mm;
+            }
+
+            #print-sheet h2 {
+                font-size: 12.5pt;
+                font-weight: 700;
+                margin: 0 0 4mm;
+            }
+
+            .p-office {
+                font-size: 10.5pt;
+                border-bottom: 1.5px solid #000;
+                padding-bottom: 2mm;
+            }
+
+            .p-fields {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 6mm;
+            }
+
+            .p-fields th,
+            .p-fields td {
+                border: 1px solid #000;
+                padding: 2.5mm 3mm;
+                text-align: left;
+                vertical-align: top;
+            }
+
+            .p-fields th {
+                width: 42mm;
+                font-weight: 700;
+            }
+
+            .p-ref {
+                font-size: 14pt;
+                letter-spacing: .04em;
+            }
+
+            .p-label {
+                font-weight: 700;
+                margin-bottom: 1.5mm;
+            }
+
+            .p-purpose {
+                margin-bottom: 7mm;
+            }
+
+            .p-purpose-text {
+                border: 1px solid #000;
+                padding: 3mm;
+                min-height: 28mm;
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+            }
+
+            .p-decision,
+            .p-staff {
+                border: 1.5px solid #000;
+                padding: 4mm 5mm;
+                margin-bottom: 6mm;
+                page-break-inside: avoid;
+            }
+
+            #print-sheet p {
+                margin: 0 0 5mm;
+            }
+
+            .pbox {
+                display: inline-block;
+                width: 5mm;
+                height: 5mm;
+                border: 1.5px solid #000;
+                vertical-align: middle;
+                margin: 0 2.5mm 0 0;
+            }
+
+            .p-choice .pbox:not(:first-child) {
+                margin-left: 12mm;
+            }
+
+            .pline {
+                display: inline-block;
+                border-bottom: 1px solid #000;
+                height: 1em;
+                vertical-align: bottom;
+            }
+
+            .pline-s {
+                min-width: 45mm;
+            }
+
+            .pline-m {
+                min-width: 60mm;
+            }
+
+            .pline-l {
+                min-width: 75mm;
+            }
+
+            .p-lines span {
+                display: block;
+                border-bottom: 1px solid #000;
+                height: 8mm;
+            }
+
+            .p-sign {
+                margin-top: 8mm;
+                margin-bottom: 0;
+            }
+
+            .p-printed {
+                font-size: 9pt;
+                margin: 0;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-msg"></span></div>
+    <div id="print-sheet"></div>
 
     <div class="pin-overlay" id="pin-overlay">
         <div class="pin-box">
@@ -918,7 +1071,8 @@
                 errDate: 'Choisissez une date à partir d’aujourd’hui.', errReason: 'Indiquez le motif du refus.',
                 rescheduleTitle: 'Reprogrammer l’audience', rescheduleSub: 'Choisissez une nouvelle date pour cet entretien.', saveDate: 'Enregistrer la nouvelle date',
                 toastReviewed: 'Demande marquée comme examinée', toastSent: 'Demande transmise au Gouverneur', toastAssigned: 'Date attribuée', toastDeclined: 'Demande refusée', toastCompleted: 'Demande terminée', toastRescheduled: 'Rendez-vous reprogrammé',
-                updateFailed: 'Échec de la mise à jour', historyFailed: 'Enregistré, mais l’historique n’a pas pu être mis à jour', dateUnchanged: 'La date n’a pas changé'
+                updateFailed: 'Échec de la mise à jour', historyFailed: 'Enregistré, mais l’historique n’a pas pu être mis à jour', dateUnchanged: 'La date n’a pas changé',
+                printBtn: 'Imprimer la fiche', pTitle: 'Fiche de demande d’audience', pRef: 'Numéro de référence', pName: 'Nom du demandeur', pOffice: 'Audience souhaitée avec', pStatus: 'Statut actuel', pPurpose: 'Objet de la demande', pGranted: 'Accordée', pRemarks: 'Observations', pGovSign: 'Signature du Gouverneur', pStaffH: 'À remplir par le personnel', pRecorded: 'Date enregistrée par', pContacted: 'Demandeur contacté le', pPrinted: 'Imprimé le'
             },
             en: {
                 region: 'Governor’s Services — South Region', tabStats: 'Statistics', dashboard: 'Dashboard', stats: 'Statistics & History', frequency: 'Request frequency by service', history: 'History',
@@ -933,7 +1087,8 @@
                 errDate: 'Choose a date from today onwards.', errReason: 'Enter the reason for declining.',
                 rescheduleTitle: 'Reschedule appointment', rescheduleSub: 'Choose a new date for this appointment.', saveDate: 'Save new date',
                 toastReviewed: 'Request marked as reviewed', toastSent: 'Request sent to the governor', toastAssigned: 'Date assigned', toastDeclined: 'Request declined', toastCompleted: 'Request completed', toastRescheduled: 'Appointment rescheduled',
-                updateFailed: 'Update failed', historyFailed: 'Saved, but the history could not be updated', dateUnchanged: 'The date did not change'
+                updateFailed: 'Update failed', historyFailed: 'Saved, but the history could not be updated', dateUnchanged: 'The date did not change',
+                printBtn: 'Print summary', pTitle: 'Audience request summary', pRef: 'Reference number', pName: 'Name of requester', pOffice: 'Audience requested with', pStatus: 'Current status', pPurpose: 'Purpose of the request', pGranted: 'Granted', pRemarks: 'Remarks', pGovSign: 'Governor’s signature', pStaffH: 'For staff use', pRecorded: 'Date recorded by', pContacted: 'Requester contacted on', pPrinted: 'Printed on'
             }
         };
         function t(key) { return T[lang][key] || key; }
@@ -1118,6 +1273,7 @@
             if (s === 'reviewed') { b.push(actionButton('send', 'btn-next', t('actSend'), r.id)); b.push(actionButton('decline', 'btn-reject', t('actDecline'), r.id)); }
             if (s === 'awaiting_decision') { b.push(actionButton('decide', 'btn-next', t('actDecide'), r.id)); }
             if (s === 'date_assigned') { b.push(actionButton('complete', 'btn-next', t('actComplete'), r.id)); b.push(actionButton('reschedule', 'btn-reschedule', t('actReschedule'), r.id)); b.push(actionButton('decline', 'btn-reject', t('actDecline'), r.id)); }
+            b.push(actionButton('print', 'btn-print', t('printBtn'), r.id));
             b.push(actionButton('whatsapp', 'btn-whatsapp', t('whatsapp'), r.id));
             return '<div class="action-row">' + b.join('') + '</div>';
         }
@@ -1159,6 +1315,7 @@
             else if (act === 'decide') openDecision(id, 'assign');
             else if (act === 'decline') openDecision(id, 'decline');
             else if (act === 'reschedule') openReschedule(id);
+            else if (act === 'print') printSummary(id);
             else if (act === 'whatsapp') openWhatsApp(id);
         });
         function openWhatsApp(id) {
@@ -1170,6 +1327,38 @@
             var requestLabel = lang === 'fr' ? 'concernant votre demande' : 'regarding your request';
             var message = greeting + ' ' + (r.fname || '') + ', ' + requestLabel + ' ' + (r.referenceNumber || '') + '...';
             window.open('https://wa.me/' + encodeURIComponent(phone) + '?text=' + encodeURIComponent(message), '_blank', 'noopener,noreferrer');
+        }
+
+        // ---- printable A4 summary ----
+        // Name, reference, office, preferred date, status, purpose and blank boxes for the
+        // governor's decision. Deliberately NO phone number and NO email (they stay on screen only).
+        function printSummary(id) {
+            var r = findReq(id);
+            if (!r) return;
+            var s = effStatus(r.status);
+            var row = function (label, valueHtml) { return '<tr><th scope="row">' + esc(label) + '</th><td>' + valueHtml + '</td></tr>'; };
+            var box = '<span class="pbox"></span>';
+            document.getElementById('print-sheet').innerHTML =
+                '<div class="p-office">' + esc(t('region')) + '</div>' +
+                '<h1>' + esc(t('pTitle')) + '</h1>' +
+                '<table class="p-fields">' +
+                row(t('pRef'), '<strong class="p-ref">' + esc(r.referenceNumber || '—') + '</strong>') +
+                row(t('pName'), esc(r.fname) + ' ' + esc(r.lname)) +
+                row(t('pOffice'), esc(officeLabel(r.target))) +
+                row(t('preferred'), esc(fmtDate(r.date))) +
+                row(t('pStatus'), esc(t('st_' + s))) +
+                '</table>' +
+                '<div class="p-purpose"><div class="p-label">' + esc(t('pPurpose')) + '</div><div class="p-purpose-text">' + esc(r.purpose) + '</div></div>' +
+                '<div class="p-decision"><h2>' + esc(t('decisionTitle')) + '</h2>' +
+                '<p class="p-choice">' + box + esc(t('pGranted')) + box + esc(t('st_declined')) + '</p>' +
+                '<p>' + esc(t('assignedOn')) + ' : <span class="pline pline-m"></span></p>' +
+                '<div class="p-label">' + esc(t('pRemarks')) + '</div><div class="p-lines"><span></span><span></span></div>' +
+                '<p class="p-sign">' + esc(t('pGovSign')) + ' : <span class="pline pline-l"></span></p></div>' +
+                '<div class="p-staff"><h2>' + esc(t('pStaffH')) + '</h2>' +
+                '<p>' + esc(t('pRecorded')) + ' : <span class="pline pline-m"></span></p>' +
+                '<p>' + esc(t('pContacted')) + ' : <span class="pline pline-s"></span></p></div>' +
+                '<p class="p-printed">' + esc(t('pPrinted')) + ' ' + esc(fmtTS(new Date().toISOString())) + '</p>';
+            window.print();
         }
 
         // ---- changing a request ----
