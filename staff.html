@@ -201,19 +201,34 @@
             color: var(--amber-text);
         }
 
-        .badge.approved {
+        .badge.reviewed {
+            background: var(--blue-light);
+            color: var(--blue-mid);
+        }
+
+        .badge.awaiting_decision {
+            background: #EEEDFE;
+            color: #3C3489;
+        }
+
+        .badge.date_assigned {
             background: var(--green-bg);
             color: var(--green-text);
         }
 
-        .badge.rejected {
+        .badge.completed {
+            background: var(--surface-2);
+            color: var(--text);
+        }
+
+        .badge.declined {
             background: var(--red-bg);
             color: var(--red-text);
         }
 
-        .badge.delegated {
+        .badge.rescheduled {
             background: var(--blue-light);
-            color: var(--blue);
+            color: var(--blue-mid);
         }
 
         .badge.flagged {
@@ -258,10 +273,132 @@
             border-color: var(--red-border);
         }
 
-        .btn-delegate {
+        .btn-reschedule {
             background: var(--blue-light);
-            color: var(--blue);
+            color: var(--blue-mid);
             border-color: var(--blue-border);
+        }
+
+        .btn-next {
+            background: var(--blue-mid);
+            color: #fff;
+            border-color: var(--blue-mid);
+        }
+
+        .card-ref {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .card-meta-strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .card-reason {
+            font-size: 13px;
+            color: var(--red-text);
+            background: var(--red-bg);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .filter-row select {
+            padding: 7px 12px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius);
+            font-size: 13px;
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .history-detail {
+            font-size: 12px;
+            margin-top: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .history-detail-moved {
+            color: var(--blue-mid);
+            background: var(--blue-light);
+        }
+
+        .history-detail-declined {
+            color: var(--red-text);
+            background: var(--red-bg);
+        }
+
+        .decision-choice {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 14px 12px;
+            margin-bottom: 14px;
+        }
+
+        .decision-choice legend {
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding: 0 6px;
+        }
+
+        .decision-choice .choice {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .decision-choice .choice input {
+            width: 20px;
+            height: 20px;
+        }
+
+        .decision-field label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .decision-input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius);
+            font-size: 14px;
+            color: var(--text);
+            background: var(--surface);
+        }
+
+        .decision-reason {
+            min-height: 110px;
+        }
+
+        .field-error-text {
+            font-size: 12px;
+            color: var(--red-text);
+            margin-top: 10px;
+            min-height: 16px;
+        }
+
+        button:focus-visible,
+        select:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid var(--blue);
+            outline-offset: 2px;
         }
 
         .btn-whatsapp {
@@ -272,7 +409,7 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 24px;
         }
@@ -286,6 +423,7 @@
         }
 
         .stat-num {
+            color: var(--blue-dark);
             font-size: 26px;
             font-weight: 500;
             line-height: 1;
@@ -338,15 +476,6 @@
             height: 100%;
             border-radius: 99px;
             background: var(--blue);
-        }
-
-        .history-note {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 12px;
-            padding: 10px 14px;
-            background: var(--surface-1);
-            border-radius: 6px;
         }
 
         .year-selector {
@@ -583,110 +712,6 @@
             cursor: pointer;
         }
 
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .45);
-            z-index: 300;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
-
-        .modal-overlay.open {
-            display: flex;
-        }
-
-        .modal {
-            background: var(--surface);
-            border-radius: 16px;
-            padding: 28px;
-            max-width: 380px;
-            width: 100%;
-        }
-
-        .modal h3 {
-            font-size: 17px;
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-
-        .modal p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 18px;
-        }
-
-        .delegate-opt {
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 12px 14px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .delegate-opt.selected {
-            border-color: var(--blue);
-            background: var(--blue-light);
-        }
-
-        .delegate-avatar {
-            width: 34px;
-            height: 34px;
-            background: var(--surface-2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            flex-shrink: 0;
-        }
-
-        .delegate-title {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .delegate-sub {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 18px;
-        }
-
-        .btn-modal-cancel {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid var(--border-strong);
-            border-radius: var(--radius);
-            background: none;
-            font-size: 14px;
-            cursor: pointer;
-            color: var(--text);
-        }
-
-        .btn-modal-confirm {
-            flex: 1;
-            padding: 10px;
-            background: var(--blue-mid);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
         .empty {
             text-align: center;
             padding: 40px 24px;
@@ -733,7 +758,7 @@
 </head>
 
 <body>
-    <div class="toast" id="toast"><span id="toast-msg"></span></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-msg"></span></div>
 
     <div class="pin-overlay" id="pin-overlay">
         <div class="pin-box">
@@ -742,33 +767,47 @@
                     alt="Coat of arms"></div>
             <h3 id="pin-title">Accès réservé</h3>
             <p id="pin-sub">Connectez-vous avec votre email professionnel pour accéder au tableau de bord.</p>
-            <input type="email" class="pin-input" id="pin-email" placeholder="nom@bureau.cm" oninput="pinInput()">
-            <input type="password" class="pin-input" id="pin-password" placeholder="••••••••" oninput="pinInput()"
+            <input type="email" class="pin-input" id="pin-email" placeholder="nom@bureau.cm" oninput="clearLoginError()">
+            <input type="password" class="pin-input" id="pin-password" placeholder="••••••••" oninput="clearLoginError()"
                 style="margin-top:10px;letter-spacing:1px">
             <div class="pin-error" id="pin-error"></div>
-            <button class="btn-pin" id="pin-btn" onclick="checkPin()">Se connecter</button>
+            <button class="btn-pin" id="pin-btn" onclick="signIn()">Se connecter</button>
         </div>
     </div>
 
-    <div class="compose-overlay" id="compose-overlay">
+    <div class="compose-overlay" id="decision-overlay" role="dialog" aria-modal="true" aria-labelledby="decision-title">
         <div class="compose-box">
-            <h3 id="compose-title">Composer une réponse</h3>
-            <p class="compose-sub" id="compose-sub">Cette réponse sera envoyée par email et SMS au visiteur.</p>
-            <div class="compose-to" id="compose-to"></div>
-            <textarea class="compose-textarea" id="compose-textarea"
-                placeholder="Rédigez votre message ici..."></textarea>
+            <h3 id="decision-title">Décision du Gouverneur</h3>
+            <p class="compose-sub" id="decision-sub">Enregistrez la décision inscrite sur la fiche papier.</p>
+            <div class="compose-to" id="decision-who"></div>
+            <fieldset class="decision-choice">
+                <legend id="decision-legend">Décision</legend>
+                <label class="choice"><input type="radio" name="decision-mode" id="dec-assign" value="assign"
+                        onchange="syncDecisionMode()"><span id="dec-assign-label">Attribuer une date</span></label>
+                <label class="choice"><input type="radio" name="decision-mode" id="dec-decline" value="decline"
+                        onchange="syncDecisionMode()"><span id="dec-decline-label">Refuser la demande</span></label>
+            </fieldset>
+            <div class="decision-field" id="decision-assign-box">
+                <label for="decision-date" id="decision-date-label">Date attribuée</label>
+                <input type="date" class="decision-input" id="decision-date">
+            </div>
+            <div class="decision-field" id="decision-decline-box">
+                <label for="decision-reason" id="decision-reason-label">Motif du refus</label>
+                <textarea class="compose-textarea decision-reason" id="decision-reason" maxlength="500"></textarea>
+            </div>
+            <div class="field-error-text" id="decision-error" role="alert"></div>
             <div class="compose-actions">
-                <button class="btn-cancel" id="compose-cancel" onclick="closeCompose()">Annuler</button>
-                <button class="btn-send-reject" id="compose-send" onclick="confirmReject()">Envoyer le rejet</button>
+                <button type="button" class="btn-cancel" id="decision-cancel" onclick="closeDecision()">Annuler</button>
+                <button type="button" class="btn-send-reject btn-save" id="decision-save" onclick="confirmDecision()">Enregistrer</button>
             </div>
         </div>
     </div>
 
-    <div class="reschedule-overlay" id="reschedule-overlay">
+    <div class="reschedule-overlay" id="reschedule-overlay" role="dialog" aria-modal="true" aria-labelledby="reschedule-title">
         <div class="reschedule-box">
             <h3 id="reschedule-title">Reprogrammer l'audience</h3>
-            <p id="reschedule-sub">Choisissez une nouvelle date pour cet entretien approuvé.</p>
-            <input type="date" id="reschedule-date">
+            <p id="reschedule-sub">Choisissez une nouvelle date pour cet entretien.</p>
+            <input type="date" id="reschedule-date" aria-labelledby="reschedule-title">
             <div class="compose-actions">
                 <button class="btn-cancel" id="reschedule-cancel" onclick="closeReschedule()">Annuler</button>
                 <button class="btn-send-reject" id="reschedule-confirm" onclick="confirmReschedule()">Enregistrer la
@@ -798,6 +837,15 @@
             <div class="section-heading">
                 <h2 id="sdg-heading">Tableau de bord</h2>
             </div>
+            <div class="filter-row">
+                <label for="status-filter" id="filter-label">Afficher</label>
+                <select id="status-filter" onchange="setStatusFilter(this.value)">
+                    <option value="active">En cours</option>
+                    <option value="completed">Terminées</option>
+                    <option value="declined">Refusées</option>
+                    <option value="all">Toutes</option>
+                </select>
+            </div>
             <div id="sdg-list"></div>
         </div>
 
@@ -816,54 +864,103 @@
                 <div class="year-selector"><select id="year-select" onchange="renderHistory()"></select></div>
             </div>
             <div id="history-list"></div>
-            <p class="history-note" id="history-note">L'historique est conservé sur une base annuelle et se réinitialise
-                automatiquement
-                le 1er janvier de chaque année.</p>
         </div>
     </div>
 
     <script>
         var lang = 'fr';
+        var OFFICES = {
+            gov: { fr: 'Gouverneur', en: 'Governor' },
+            sg: { fr: 'Secrétaire Général', en: 'Secretary General' },
+            sp: { fr: 'Secrétaire Particulier', en: 'Private Secretary' },
+            ig: { fr: 'Inspecteur Général', en: 'Inspector General' },
+            daaj: { fr: 'DAAJ', en: 'DAAJ' },
+            daesc: { fr: 'DAESC', en: 'DAESC' },
+            dbr: { fr: 'DBR', en: 'DBR' },
+            dpoa: { fr: 'DPOA', en: 'DPOA' }
+        };
+        // Stored status values, in the order of the flow. 'approved' and 'rejected' are old
+        // values still in the database: they are shown as 'date_assigned' and 'declined'.
+        var STATUS_ORDER = ['pending', 'reviewed', 'awaiting_decision', 'date_assigned', 'completed', 'declined'];
+        var STATUS_ALIAS = { approved: 'date_assigned', rejected: 'declined' };
         var T = {
-            fr: { region: 'Services du Gouverneur — Région du Sud', tabStats: 'Statistiques', dashboard: 'Tableau de bord', stats: 'Statistiques & Historique', frequency: 'Fréquence des demandes par service', history: 'Historique', note: 'L\'historique est conservé sur une base annuelle et se réinitialise automatiquement le 1er janvier de chaque année.', login: 'Accès réservé', loginSub: 'Connectez-vous avec votre email professionnel pour accéder au tableau de bord.', loginButton: 'Se connecter', received: 'Reçu le', type: 'Type', audience: 'Audience avec', individual: 'Personne physique', pending: 'En attente', approved: 'Approuvée', approve: 'Approuver', reject: 'Rejeter', delegate: 'Déléguer', reschedule: 'Reprogrammer', empty: 'Aucune demande en attente', emptyHistory: 'Aucun enregistrement pour cette période.', service: 'Service', requests: 'Demandes', rejected: 'Rejetée', rescheduled: 'Reprogrammée', rescheduleTitle: 'Reprogrammer l\'audience', rescheduleSub: 'Choisissez une nouvelle date pour cet entretien approuvé.', saveDate: 'Enregistrer la nouvelle date', flaggedForReschedule: '⚠ Le citoyen demande un report', whatsapp: 'Message sur WhatsApp' },
-            en: { region: 'Governor\'s Services — South Region', tabStats: 'Statistics', dashboard: 'Dashboard', stats: 'Statistics & History', frequency: 'Request frequency by service', history: 'History', note: 'History is kept on an annual basis and resets automatically on January 1st each year.', login: 'Restricted access', loginSub: 'Sign in with your work email to access the dashboard.', loginButton: 'Sign in', received: 'Received on', type: 'Type', audience: 'Audience with', individual: 'Individual', pending: 'Pending', approved: 'Approved', approve: 'Approve', reject: 'Reject', delegate: 'Delegate', reschedule: 'Reschedule', empty: 'No pending requests', emptyHistory: 'No records for this period.', service: 'Service', requests: 'Requests', rejected: 'Rejected', rescheduled: 'Rescheduled', rescheduleTitle: 'Reschedule audience', rescheduleSub: 'Choose a new date for this approved appointment.', saveDate: 'Save new date', flaggedForReschedule: '⚠ Citizen requested reschedule', whatsapp: 'Message on WhatsApp' }
+            fr: {
+                region: 'Services du Gouverneur — Région du Sud', tabStats: 'Statistiques', dashboard: 'Tableau de bord', stats: 'Statistiques & Historique', frequency: 'Fréquence des demandes par service', history: 'Historique',
+                login: 'Accès réservé', loginSub: 'Connectez-vous avec votre email professionnel pour accéder au tableau de bord.', loginButton: 'Se connecter',
+                received: 'Reçu le', type: 'Type', audience: 'Audience avec', individual: 'Personne physique', preferred: 'Date souhaitée', assignedOn: 'Date attribuée', reasonShort: 'Motif', ref: 'Réf.',
+                whatsapp: 'Message sur WhatsApp', flaggedForReschedule: '⚠ Le citoyen demande un report',
+                st_pending: 'Soumise', st_reviewed: 'Examinée par le personnel', st_awaiting_decision: 'En attente de la décision du Gouverneur', st_date_assigned: 'Date attribuée', st_completed: 'Terminée', st_declined: 'Refusée',
+                actReview: 'Marquer comme examinée', actSend: 'Transmettre au Gouverneur', actDecide: 'Enregistrer la décision', actComplete: 'Marquer comme terminée', actReschedule: 'Reprogrammer', actDecline: 'Refuser',
+                filterLabel: 'Afficher', fActive: 'En cours', fCompleted: 'Terminées', fDeclined: 'Refusées', fAll: 'Toutes',
+                empty: 'Aucune demande dans cette liste', emptyHistory: 'Aucun enregistrement pour cette période.', service: 'Service', requests: 'Demandes', rescheduled: 'Reprogrammée',
+                decisionTitle: 'Décision du Gouverneur', decisionSub: 'Enregistrez la décision inscrite sur la fiche papier.', decisionLegend: 'Décision', decAssign: 'Attribuer une date', decDecline: 'Refuser la demande', assignedDateLabel: 'Date attribuée', reasonLabel: 'Motif du refus', save: 'Enregistrer', cancel: 'Annuler',
+                errDate: 'Choisissez une date à partir d’aujourd’hui.', errReason: 'Indiquez le motif du refus.',
+                rescheduleTitle: 'Reprogrammer l’audience', rescheduleSub: 'Choisissez une nouvelle date pour cet entretien.', saveDate: 'Enregistrer la nouvelle date',
+                toastReviewed: 'Demande marquée comme examinée', toastSent: 'Demande transmise au Gouverneur', toastAssigned: 'Date attribuée', toastDeclined: 'Demande refusée', toastCompleted: 'Demande terminée', toastRescheduled: 'Rendez-vous reprogrammé',
+                updateFailed: 'Échec de la mise à jour', historyFailed: 'Enregistré, mais l’historique n’a pas pu être mis à jour', dateUnchanged: 'La date n’a pas changé'
+            },
+            en: {
+                region: 'Governor’s Services — South Region', tabStats: 'Statistics', dashboard: 'Dashboard', stats: 'Statistics & History', frequency: 'Request frequency by service', history: 'History',
+                login: 'Restricted access', loginSub: 'Sign in with your work email to access the dashboard.', loginButton: 'Sign in',
+                received: 'Received on', type: 'Type', audience: 'Audience with', individual: 'Individual', preferred: 'Preferred date', assignedOn: 'Date assigned', reasonShort: 'Reason', ref: 'Ref.',
+                whatsapp: 'Message on WhatsApp', flaggedForReschedule: '⚠ Citizen requested reschedule',
+                st_pending: 'Submitted', st_reviewed: 'Reviewed by staff', st_awaiting_decision: 'Awaiting the governor’s decision', st_date_assigned: 'Date assigned', st_completed: 'Completed', st_declined: 'Declined',
+                actReview: 'Mark as reviewed', actSend: 'Send to the governor', actDecide: 'Record the decision', actComplete: 'Mark as completed', actReschedule: 'Reschedule', actDecline: 'Decline',
+                filterLabel: 'Show', fActive: 'In progress', fCompleted: 'Completed', fDeclined: 'Declined', fAll: 'All',
+                empty: 'No requests in this list', emptyHistory: 'No records for this period.', service: 'Service', requests: 'Requests', rescheduled: 'Rescheduled',
+                decisionTitle: 'The governor’s decision', decisionSub: 'Record the decision written on the paper summary.', decisionLegend: 'Decision', decAssign: 'Assign a date', decDecline: 'Decline the request', assignedDateLabel: 'Assigned date', reasonLabel: 'Reason for declining', save: 'Save', cancel: 'Cancel',
+                errDate: 'Choose a date from today onwards.', errReason: 'Enter the reason for declining.',
+                rescheduleTitle: 'Reschedule appointment', rescheduleSub: 'Choose a new date for this appointment.', saveDate: 'Save new date',
+                toastReviewed: 'Request marked as reviewed', toastSent: 'Request sent to the governor', toastAssigned: 'Date assigned', toastDeclined: 'Request declined', toastCompleted: 'Request completed', toastRescheduled: 'Appointment rescheduled',
+                updateFailed: 'Update failed', historyFailed: 'Saved, but the history could not be updated', dateUnchanged: 'The date did not change'
+            }
         };
         function t(key) { return T[lang][key] || key; }
+        function effStatus(s) { return STATUS_ALIAS[s] || s; }
+        function officeLabel(code) { var o = OFFICES[code]; return o ? o[lang] : String(code || ''); }
+        function assignedDateOf(r) { return r.assignedDate || (r.status === 'approved' ? r.date : null); }
+        function todayStr() { var d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); }
+        function yearOf(dateStr) { return new Date(dateStr).getFullYear(); }
         function toggleLang() { lang = lang === 'fr' ? 'en' : 'fr'; applyLang(); renderSDG(); renderStats(); renderHistory(); }
+        function setText(id, key) { document.getElementById(id).textContent = t(key); }
         function applyLang() {
             document.documentElement.lang = lang;
             document.getElementById('lang-toggle').textContent = lang === 'fr' ? 'EN' : 'FR';
-            document.getElementById('nav-region').textContent = t('region');
-            document.getElementById('tab-stats-label').textContent = t('tabStats');
-            document.getElementById('sdg-heading').textContent = t('dashboard');
-            document.getElementById('stats-heading').textContent = t('stats');
-            document.getElementById('hod-heading').textContent = t('frequency');
-            document.getElementById('history-heading').textContent = t('history');
-            document.getElementById('history-note').textContent = t('note');
-            renderStatsLabels();
-            document.getElementById('pin-title').textContent = t('login');
-            document.getElementById('pin-sub').textContent = t('loginSub');
-            document.getElementById('pin-btn').textContent = t('loginButton');
-            document.getElementById('reschedule-title').textContent = t('rescheduleTitle');
-            document.getElementById('reschedule-sub').textContent = t('rescheduleSub');
-            document.getElementById('reschedule-confirm').textContent = t('saveDate');
-        }
-        function renderStatsLabels() {
-            var labels = document.querySelectorAll('#stats-grid .stat-label');
-            if (labels.length >= 4) {
-                labels[0].textContent = t('pending');
-                labels[1].textContent = t('approved') + (lang === 'fr' ? 's' : '');
-                labels[2].textContent = t('rejected') + (lang === 'fr' ? 'es' : '');
-                labels[3].textContent = lang === 'fr' ? 'Déléguées / Reprogrammées' : 'Delegated / Rescheduled';
-            }
+            setText('nav-region', 'region');
+            setText('tab-stats-label', 'tabStats');
+            setText('sdg-heading', 'dashboard');
+            setText('stats-heading', 'stats');
+            setText('hod-heading', 'frequency');
+            setText('history-heading', 'history');
+            setText('pin-title', 'login');
+            setText('pin-sub', 'loginSub');
+            setText('pin-btn', 'loginButton');
+            setText('filter-label', 'filterLabel');
+            var filter = document.getElementById('status-filter');
+            [['active', 'fActive'], ['completed', 'fCompleted'], ['declined', 'fDeclined'], ['all', 'fAll']].forEach(function (o, i) { filter.options[i].textContent = t(o[1]); });
+            setText('decision-title', 'decisionTitle');
+            setText('decision-sub', 'decisionSub');
+            setText('decision-legend', 'decisionLegend');
+            setText('dec-assign-label', 'decAssign');
+            setText('dec-decline-label', 'decDecline');
+            setText('decision-date-label', 'assignedDateLabel');
+            setText('decision-reason-label', 'reasonLabel');
+            setText('decision-save', 'save');
+            setText('decision-cancel', 'cancel');
+            setText('reschedule-title', 'rescheduleTitle');
+            setText('reschedule-sub', 'rescheduleSub');
+            setText('reschedule-confirm', 'saveDate');
+            setText('reschedule-cancel', 'cancel');
         }
         var pinUnlocked = false;
         var pendingTab = 'sdg';
-        var rejectTargetId = null;
         var supabaseClient = null;
         var requests = [];
         var requestHistory = [];
+        var statusFilter = 'active';
+        var decisionTargetId = null;
         var rescheduleTargetId = null;
+        var busy = false;
         function initSupabaseAuth() {
             var cfg = window.AUDIENCEGOV_CONFIG || {};
             if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) {
@@ -918,12 +1015,10 @@
             }
         }
         function mapRequest(row) {
-            var targetLabels = { gov: { fr: 'Gouverneur', en: 'Governor' }, sg: { fr: 'Secrétaire Général', en: 'Secretary General' }, sp: { fr: 'Secrétaire Particulier', en: 'Private Secretary' }, ig: { fr: 'Inspecteur Général', en: 'Inspector General' }, daaj: { fr: 'DAAJ', en: 'DAAJ' }, daesc: { fr: 'DAESC', en: 'DAESC' }, dbr: { fr: 'DBR', en: 'DBR' }, dpoa: { fr: 'DPOA', en: 'DPOA' } };
-            return { id: row.id, fname: row.first_name, lname: row.last_name, phone: row.phone, email: row.email || '', referenceNumber: row.reference_number, flaggedForReschedule: row.flagged_for_reschedule === true, vtype: row.visitor_type, vtypeLabel: row.visitor_detail || '', target: row.target_official, targetLabel: targetLabels[row.target_official] || { fr: row.target_official, en: row.target_official }, purpose: row.purpose, date: row.preferred_date, status: row.status, delegateTo: row.delegate_to, rejectMsg: row.reject_reason, ts: row.created_at };
+            return { id: row.id, fname: row.first_name, lname: row.last_name, phone: row.phone, email: row.email || '', referenceNumber: row.reference_number, flaggedForReschedule: row.flagged_for_reschedule === true, vtype: row.visitor_type, vtypeLabel: row.visitor_detail || '', target: row.target_official, purpose: row.purpose, date: row.preferred_date, assignedDate: row.assigned_date || null, status: row.status, rejectMsg: row.reject_reason, ts: row.created_at };
         }
         function mapHistory(row) {
-            var targetLabels = { gov: { fr: 'Gouverneur', en: 'Governor' }, sg: { fr: 'Secrétaire Général', en: 'Secretary General' }, sp: { fr: 'Secrétaire Particulier', en: 'Private Secretary' }, ig: { fr: 'Inspecteur Général', en: 'Inspector General' }, daaj: { fr: 'DAAJ', en: 'DAAJ' }, daesc: { fr: 'DAESC', en: 'DAESC' }, dbr: { fr: 'DBR', en: 'DBR' }, dpoa: { fr: 'DPOA', en: 'DPOA' } };
-            return { id: row.request_id || row.id, fname: row.requests ? row.requests.first_name : '', lname: row.requests ? row.requests.last_name : '', phone: row.requests ? row.requests.phone : '', email: row.requests ? row.requests.email : '', target: row.requests ? row.requests.target_official : '', targetLabel: targetLabels[row.requests ? row.requests.target_official : ''] || { fr: '', en: '' }, purpose: row.requests ? row.requests.purpose : '', originalDate: row.original_date, newDate: row.rescheduled_date, status: row.status, rejectMsg: row.reason, ts: row.created_at };
+            return { id: row.request_id || row.id, fname: row.requests ? row.requests.first_name : '', lname: row.requests ? row.requests.last_name : '', phone: row.requests ? row.requests.phone : '', email: row.requests ? row.requests.email : '', target: row.requests ? row.requests.target_official : '', purpose: row.requests ? row.requests.purpose : '', originalDate: row.original_date, newDate: row.rescheduled_date, status: row.status, rejectMsg: row.reason, ts: row.created_at };
         }
         async function loadStaffData() {
             var requestResult = await supabaseClient.from('requests').select('*').order('created_at', { ascending: false });
@@ -937,8 +1032,8 @@
             renderHistory();
         }
         function requestInternalAccess(tab) { if (pinUnlocked) { switchTab(tab); return; } pendingTab = tab; document.getElementById('pin-email').value = ''; document.getElementById('pin-password').value = ''; document.getElementById('pin-error').textContent = ''; document.getElementById('pin-overlay').style.display = 'flex'; setTimeout(function () { document.getElementById('pin-email').focus(); }, 200); }
-        function pinInput() { document.getElementById('pin-error').textContent = ''; }
-        async function checkPin() {
+        function clearLoginError() { document.getElementById('pin-error').textContent = ''; }
+        async function signIn() {
             var email = document.getElementById('pin-email').value.trim();
             var password = document.getElementById('pin-password').value;
             if (!email || !password) { document.getElementById('pin-error').textContent = 'Veuillez saisir votre email et votre mot de passe.'; return; }
@@ -962,7 +1057,10 @@
                 document.getElementById('pin-password').value = '';
             }
         }
-        document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && document.getElementById('pin-overlay').style.display === 'flex') checkPin(); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && document.getElementById('pin-overlay').style.display === 'flex') signIn();
+            if (e.key === 'Escape') { closeDecision(); closeReschedule(); }
+        });
         function switchTab(name) {
             ['sdg', 'stats'].forEach(function (n) {
                 document.getElementById('panel-' + n).classList.toggle('active', n === name);
@@ -976,28 +1074,74 @@
                 return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
             });
         }
-        function renderSDG() {
-            var active = requests.filter(function (r) { return r.status === 'pending' || r.status === 'approved'; });
-            var list = document.getElementById('sdg-list');
-            if (active.length === 0) { list.innerHTML = '<div class="empty"><p>' + t('empty') + '</p></div>'; return; }
-            list.innerHTML = active.map(function (r) {
-                var vtl = r.vtype === 'other' ? r.vtypeLabel : t('individual');
-                var badge = r.status === 'approved' ? '<span class="badge approved">' + t('approved') + '</span>' : '<span class="badge pending">' + t('pending') + '</span>';
-                var actions = r.status === 'approved'
-                    ? '<div class="action-row"><button class="action-btn btn-delegate" onclick="openReschedule(' + '\'' + r.id + '\'' + ')">↺ ' + t('reschedule') + '</button><button class="action-btn btn-reject" onclick="openCompose(' + '\'' + r.id + '\'' + ')">✕ ' + t('reject') + '</button></div>'
-                    : '<div class="action-row"><button class="action-btn btn-approve" onclick="approveReq(' + '\'' + r.id + '\'' + ')">✓ ' + t('approve') + '</button><button class="action-btn btn-reject" onclick="openCompose(' + '\'' + r.id + '\'' + ')">✕ ' + t('reject') + '</button></div>';
-                var flaggedBadge = r.flaggedForReschedule ? '<span class="badge flagged">' + t('flaggedForReschedule') + '</span>' : '';
-                var whatsappButton = '<button class="action-btn btn-whatsapp" onclick="openWhatsApp(' + '\'' + r.id + '\'' + ')">' + t('whatsapp') + '</button>';
-                return '<div class="card">' +
-                    '<div class="card-header"><div><div class="card-name">' + esc(r.fname) + ' ' + esc(r.lname) + '</div></div><div class="card-badges">' + badge + flaggedBadge + '</div></div>' +
-                    '<div class="card-meta"><span class="card-meta-item">📅 ' + t('received') + ': ' + fmtTS(r.ts) + '</span><span class="card-meta-item">👤 ' + t('type') + ': ' + esc(vtl) + '</span><span class="card-meta-item">🎯 ' + t('audience') + ': ' + r.targetLabel[lang] + '</span><span class="card-meta-item">📞 ' + esc(r.phone) + '</span>' + (r.email ? '<span class="card-meta-item">✉ ' + esc(r.email) + '</span>' : '') + '<span class="card-meta-item">📆 ' + fmtDate(r.date) + '</span></div>' +
-                    '<div class="card-purpose">' + esc(r.purpose) + '</div>' +
-                    actions.replace('</div>', whatsappButton + '</div>') +
-                    '</div>';
-            }).join('');
+        function fmtDate(iso) { var d = new Date(iso); return d.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); }
+        function fmtTS(iso) { var d = new Date(iso); var loc = lang === 'fr' ? 'fr-FR' : 'en-GB'; return d.toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' }); }
+        function findReq(id) { return requests.find(function (x) { return x.id === id; }); }
+
+        // ---- dashboard list ----
+        function matchesFilter(r) {
+            var s = effStatus(r.status);
+            if (statusFilter === 'all') return true;
+            if (statusFilter === 'completed') return s === 'completed';
+            if (statusFilter === 'declined') return s === 'declined';
+            return s !== 'completed' && s !== 'declined';
         }
+        function setStatusFilter(v) { statusFilter = v; renderSDG(); }
+        function actionButton(act, cls, label, id) {
+            return '<button type="button" class="action-btn ' + cls + '" data-act="' + act + '" data-id="' + esc(id) + '">' + esc(label) + '</button>';
+        }
+        function actionsHtml(r) {
+            var s = effStatus(r.status);
+            var b = [];
+            if (s === 'pending') { b.push(actionButton('review', 'btn-next', t('actReview'), r.id)); b.push(actionButton('decline', 'btn-reject', t('actDecline'), r.id)); }
+            if (s === 'reviewed') { b.push(actionButton('send', 'btn-next', t('actSend'), r.id)); b.push(actionButton('decline', 'btn-reject', t('actDecline'), r.id)); }
+            if (s === 'awaiting_decision') { b.push(actionButton('decide', 'btn-next', t('actDecide'), r.id)); }
+            if (s === 'date_assigned') { b.push(actionButton('complete', 'btn-next', t('actComplete'), r.id)); b.push(actionButton('reschedule', 'btn-reschedule', t('actReschedule'), r.id)); b.push(actionButton('decline', 'btn-reject', t('actDecline'), r.id)); }
+            b.push(actionButton('whatsapp', 'btn-whatsapp', t('whatsapp'), r.id));
+            return '<div class="action-row">' + b.join('') + '</div>';
+        }
+        function cardHtml(r) {
+            var s = effStatus(r.status);
+            var vtl = r.vtype === 'other' ? r.vtypeLabel : t('individual');
+            var ad = assignedDateOf(r);
+            var flagged = r.flaggedForReschedule && s !== 'completed' && s !== 'declined' ? '<span class="badge flagged">' + esc(t('flaggedForReschedule')) + '</span>' : '';
+            var meta = '<span class="card-meta-item">' + esc(t('received')) + ': ' + fmtTS(r.ts) + '</span>' +
+                '<span class="card-meta-item">' + esc(t('type')) + ': ' + esc(vtl) + '</span>' +
+                '<span class="card-meta-item">' + esc(t('audience')) + ': ' + esc(officeLabel(r.target)) + '</span>' +
+                '<span class="card-meta-item">📞 ' + esc(r.phone) + '</span>' +
+                (r.email ? '<span class="card-meta-item">✉ ' + esc(r.email) + '</span>' : '') +
+                '<span class="card-meta-item">' + esc(t('preferred')) + ': ' + fmtDate(r.date) + '</span>' +
+                (ad && (s === 'date_assigned' || s === 'completed') ? '<span class="card-meta-item card-meta-strong">' + esc(t('assignedOn')) + ': ' + fmtDate(ad) + '</span>' : '');
+            var reason = s === 'declined' && r.rejectMsg ? '<div class="card-reason">' + esc(t('reasonShort')) + ': ' + esc(r.rejectMsg) + '</div>' : '';
+            return '<div class="card">' +
+                '<div class="card-header"><div><div class="card-name">' + esc(r.fname) + ' ' + esc(r.lname) + '</div>' +
+                (r.referenceNumber ? '<div class="card-ref">' + esc(t('ref')) + ' ' + esc(r.referenceNumber) + '</div>' : '') +
+                '</div><div class="card-badges"><span class="badge ' + s + '">' + esc(t('st_' + s)) + '</span>' + flagged + '</div></div>' +
+                '<div class="card-meta">' + meta + '</div>' +
+                '<div class="card-purpose">' + esc(r.purpose) + '</div>' + reason +
+                actionsHtml(r) + '</div>';
+        }
+        function renderSDG() {
+            var shown = requests.filter(matchesFilter);
+            var list = document.getElementById('sdg-list');
+            if (shown.length === 0) { list.innerHTML = '<div class="empty"><p>' + esc(t('empty')) + '</p></div>'; return; }
+            list.innerHTML = shown.map(cardHtml).join('');
+        }
+        document.getElementById('sdg-list').addEventListener('click', function (e) {
+            var btn = e.target.closest('button[data-act]');
+            if (!btn) return;
+            var id = btn.getAttribute('data-id');
+            var act = btn.getAttribute('data-act');
+            if (act === 'review') advance(id, 'reviewed', 'toastReviewed');
+            else if (act === 'send') advance(id, 'awaiting_decision', 'toastSent');
+            else if (act === 'complete') advance(id, 'completed', 'toastCompleted');
+            else if (act === 'decide') openDecision(id, 'assign');
+            else if (act === 'decline') openDecision(id, 'decline');
+            else if (act === 'reschedule') openReschedule(id);
+            else if (act === 'whatsapp') openWhatsApp(id);
+        });
         function openWhatsApp(id) {
-            var r = requests.find(function (request) { return request.id === id; });
+            var r = findReq(id);
             if (!r) return;
             var phone = String(r.phone || '').replace(/[\s+]/g, '');
             if (/^6\d{8}$/.test(phone)) phone = '237' + phone;
@@ -1006,62 +1150,153 @@
             var message = greeting + ' ' + (r.fname || '') + ', ' + requestLabel + ' ' + (r.referenceNumber || '') + '...';
             window.open('https://wa.me/' + encodeURIComponent(phone) + '?text=' + encodeURIComponent(message), '_blank', 'noopener,noreferrer');
         }
-        function fmtDate(iso) { var d = new Date(iso); return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }); }
-        function fmtTS(iso) { var d = new Date(iso); return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); }
-        async function approveReq(id) { var result = await supabaseClient.from('requests').update({ status: 'approved' }).eq('id', id); if (result.error) { showToast(lang === 'fr' ? 'Échec de la mise à jour' : 'Update failed'); return; } var r = requests.find(function (x) { return x.id === id; }); if (r) { r.status = 'approved'; } showToast(lang === 'fr' ? 'Audience approuvée' : 'Audience approved'); renderSDG(); }
-        function openCompose(id) { rejectTargetId = id; var r = requests.find(function (x) { return x.id === id; }); document.getElementById('compose-to').textContent = 'À : ' + r.fname + ' ' + r.lname + (r.email ? ' — ' + r.email : '') + ' · ' + r.phone; document.getElementById('compose-textarea').value = ''; document.getElementById('compose-overlay').classList.add('open'); setTimeout(function () { document.getElementById('compose-textarea').focus(); }, 200); }
-        function closeCompose() { document.getElementById('compose-overlay').classList.remove('open'); }
-        async function confirmReject() {
-            var msg = document.getElementById('compose-textarea').value.trim(); var r = requests.find(function (x) { return x.id === rejectTargetId; }); if (!r) return;
-            var historyResult = await supabaseClient.from('history').insert({ request_id: r.id, original_date: r.date, status: 'rejected', reason: msg, year: new Date(r.date).getFullYear() });
-            if (historyResult.error) { showToast('Échec de l\'enregistrement'); return; }
-            var requestResult = await supabaseClient.from('requests').update({ status: 'rejected', reject_reason: msg }).eq('id', r.id);
-            if (requestResult.error) { showToast('Échec de la mise à jour'); return; }
-            r.status = 'rejected'; r.rejectMsg = msg; requestHistory.push(Object.assign({}, r));
-            requests = requests.filter(function (x) { return x.id !== rejectTargetId; }); closeCompose(); showToast('Demande rejetée'); renderSDG(); renderStats(); renderHistory();
+
+        // ---- changing a request ----
+        // Saves the change and checks that exactly one row was really updated.
+        async function saveRequest(id, fields) {
+            var result = await supabaseClient.from('requests').update(fields).eq('id', id).select('id');
+            if (result.error || !result.data || result.data.length !== 1) { console.error('Update failed:', result.error); showToast(t('updateFailed')); return false; }
+            return true;
+        }
+        async function advance(id, newStatus, toastKey) {
+            if (busy) return;
+            var r = findReq(id);
+            if (!r) return;
+            busy = true;
+            try {
+                if (!(await saveRequest(id, { status: newStatus }))) return;
+                r.status = newStatus;
+                showToast(t(toastKey));
+                renderSDG();
+                renderStats();
+            } finally { busy = false; }
+        }
+        function syncDecisionMode() {
+            var assign = document.getElementById('dec-assign').checked;
+            document.getElementById('decision-assign-box').style.display = assign ? 'block' : 'none';
+            document.getElementById('decision-decline-box').style.display = assign ? 'none' : 'block';
+            document.getElementById('decision-error').textContent = '';
+        }
+        function openDecision(id, mode) {
+            var r = findReq(id);
+            if (!r) return;
+            decisionTargetId = id;
+            document.getElementById('decision-who').textContent = r.fname + ' ' + r.lname + (r.referenceNumber ? ' — ' + r.referenceNumber : '');
+            document.getElementById('dec-assign').checked = mode === 'assign';
+            document.getElementById('dec-decline').checked = mode !== 'assign';
+            var dateInput = document.getElementById('decision-date');
+            dateInput.min = todayStr();
+            dateInput.value = r.date >= todayStr() ? r.date : '';
+            document.getElementById('decision-reason').value = '';
+            syncDecisionMode();
+            document.getElementById('decision-overlay').classList.add('open');
+            setTimeout(function () { document.getElementById(mode === 'assign' ? 'dec-assign' : 'dec-decline').focus(); }, 100);
+        }
+        function closeDecision() { document.getElementById('decision-overlay').classList.remove('open'); decisionTargetId = null; }
+        async function confirmDecision() {
+            if (busy) return;
+            var r = findReq(decisionTargetId);
+            if (!r) return;
+            var errorBox = document.getElementById('decision-error');
+            errorBox.textContent = '';
+            var assign = document.getElementById('dec-assign').checked;
+            if (assign) {
+                var date = document.getElementById('decision-date').value;
+                if (!date || date < todayStr()) { errorBox.textContent = t('errDate'); return; }
+                busy = true;
+                try {
+                    if (!(await saveRequest(r.id, { status: 'date_assigned', assigned_date: date }))) return;
+                    r.status = 'date_assigned'; r.assignedDate = date;
+                    closeDecision();
+                    showToast(t('toastAssigned'));
+                    renderSDG(); renderStats();
+                } finally { busy = false; }
+                return;
+            }
+            var reason = document.getElementById('decision-reason').value.trim();
+            if (!reason) { errorBox.textContent = t('errReason'); return; }
+            busy = true;
+            try {
+                if (!(await saveRequest(r.id, { status: 'declined', reject_reason: reason }))) return;
+                var from = assignedDateOf(r) || r.date;
+                var historyResult = await supabaseClient.from('history').insert({ request_id: r.id, original_date: from, status: 'rejected', reason: reason, year: yearOf(from) });
+                if (historyResult.error) { console.error('History insert failed:', historyResult.error); showToast(t('historyFailed')); }
+                else { requestHistory.unshift({ id: r.id, fname: r.fname, lname: r.lname, phone: r.phone, email: r.email, target: r.target, purpose: r.purpose, originalDate: from, newDate: null, status: 'rejected', rejectMsg: reason, ts: new Date().toISOString() }); showToast(t('toastDeclined')); }
+                r.status = 'declined'; r.rejectMsg = reason;
+                closeDecision();
+                renderSDG(); renderStats(); renderHistory();
+            } finally { busy = false; }
         }
         function openReschedule(id) {
-            rescheduleTargetId = id;
-            var r = requests.find(function (x) { return x.id === id; });
+            var r = findReq(id);
             if (!r) return;
-            document.getElementById('reschedule-date').value = r.date;
+            rescheduleTargetId = id;
+            var dateInput = document.getElementById('reschedule-date');
+            dateInput.min = todayStr();
+            dateInput.value = assignedDateOf(r) || r.date;
             document.getElementById('reschedule-overlay').classList.add('open');
+            setTimeout(function () { dateInput.focus(); }, 100);
         }
         function closeReschedule() {
             document.getElementById('reschedule-overlay').classList.remove('open');
             rescheduleTargetId = null;
         }
         async function confirmReschedule() {
+            if (busy) return;
             var date = document.getElementById('reschedule-date').value;
-            if (!date) return;
-            var r = requests.find(function (x) { return x.id === rescheduleTargetId; });
+            if (!date || date < todayStr()) { showToast(t('errDate')); return; }
+            var r = findReq(rescheduleTargetId);
             if (!r) return;
-            if (date === r.date) {
+            var from = assignedDateOf(r) || r.date;
+            if (date === from) { closeReschedule(); showToast(t('dateUnchanged')); return; }
+            busy = true;
+            try {
+                // the citizen's "I can't come" flag is cleared once the new date is set
+                if (!(await saveRequest(r.id, { status: 'date_assigned', assigned_date: date, flagged_for_reschedule: false, flagged_at: null }))) return;
+                var historyResult = await supabaseClient.from('history').insert({ request_id: r.id, original_date: from, rescheduled_date: date, status: 'rescheduled', year: yearOf(from) });
+                if (historyResult.error) { console.error('History insert failed:', historyResult.error); showToast(t('historyFailed')); }
+                else { requestHistory.unshift({ id: r.id, fname: r.fname, lname: r.lname, phone: r.phone, email: r.email, target: r.target, purpose: r.purpose, originalDate: from, newDate: date, status: 'rescheduled', rejectMsg: null, ts: new Date().toISOString() }); showToast(t('toastRescheduled')); }
+                r.status = 'date_assigned'; r.assignedDate = date; r.flaggedForReschedule = false;
                 closeReschedule();
-                showToast('La date n\'a pas changé');
-                return;
-            }
-            var historyResult = await supabaseClient.from('history').insert({ request_id: r.id, original_date: r.date, rescheduled_date: date, status: 'rescheduled', year: new Date(r.date).getFullYear() });
-            if (historyResult.error) { showToast('Échec de l\'enregistrement'); return; }
-            var requestResult = await supabaseClient.from('requests').update({ preferred_date: date, status: 'approved' }).eq('id', r.id);
-            if (requestResult.error) { showToast('Échec de la mise à jour'); return; }
-            requestHistory.push({ id: r.id, fname: r.fname, lname: r.lname, phone: r.phone, email: r.email, vtype: r.vtype, vtypeLabel: r.vtypeLabel, target: r.target, targetLabel: r.targetLabel, purpose: r.purpose, originalDate: r.date, newDate: date, status: 'rescheduled', delegateTo: r.delegateTo, rejectMsg: null, ts: new Date().toISOString() });
-            r.date = date;
-            closeReschedule();
-            showToast('Rendez-vous reprogrammé');
-            renderSDG();
-            renderStats();
-            renderHistory();
+                renderSDG(); renderStats(); renderHistory();
+            } finally { busy = false; }
         }
+
+        // ---- statistics and history ----
         function renderStats() {
-            var all = requests.concat(requestHistory); var pending = all.filter(function (r) { return r.status === 'pending'; }).length; var approved = all.filter(function (r) { return r.status === 'approved'; }).length; var rejected = all.filter(function (r) { return r.status === 'rejected'; }).length; var delegated = all.filter(function (r) { return r.status === 'delegated'; }).length; var rescheduled = all.filter(function (r) { return r.status === 'rescheduled'; }).length;
-            document.getElementById('stats-grid').innerHTML = '<div class="stat-card"><div class="stat-num" style="color:var(--blue)">' + pending + '</div><div class="stat-label">' + t('pending') + '</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:#3B6D11">' + approved + '</div><div class="stat-label">' + (lang === 'fr' ? 'Approuvées' : 'Approved') + '</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:#A32D2D">' + rejected + '</div><div class="stat-label">' + (lang === 'fr' ? 'Rejetées' : 'Rejected') + '</div></div>' + '<div class="stat-card"><div class="stat-num" style="color:#854F0B">' + (delegated + rescheduled) + '</div><div class="stat-label">' + (lang === 'fr' ? 'Déléguées / Reprogrammées' : 'Delegated / Rescheduled') + '</div></div>';
-            var targets = ['gov', 'sg', 'sp', 'ig', 'daaj', 'daesc', 'dbr', 'dpoa']; var labels = { gov: { fr: 'Gouverneur', en: 'Governor' }, sg: { fr: 'Secrétaire Général', en: 'Secretary General' }, sp: { fr: 'Secrétaire Particulier', en: 'Private Secretary' }, ig: { fr: 'Inspecteur Général', en: 'Inspector General' }, daaj: { fr: 'DAAJ', en: 'DAAJ' }, daesc: { fr: 'DAESC', en: 'DAESC' }, dbr: { fr: 'DBR', en: 'DBR' }, dpoa: { fr: 'DPOA', en: 'DPOA' } }; var counts = {}; targets.forEach(function (k) { counts[k] = 0; }); all.forEach(function (r) { if (counts[r.target] !== undefined) counts[r.target]++; }); var max = Math.max.apply(null, Object.values(counts)) || 1; document.getElementById('hod-table').innerHTML = '<tr><th>' + t('service') + '</th><th>' + t('requests') + '</th></tr>' + targets.filter(function (k) { return counts[k] > 0; }).sort(function (a, b) { return counts[b] - counts[a]; }).map(function (k) { var pct = Math.round(counts[k] / max * 100); return '<tr><td><strong>' + labels[k][lang] + '</strong><div class="hod-bar"><div class="hod-bar-fill" style="width:' + pct + '%"></div></div></td><td>' + counts[k] + '</td></tr>'; }).join('');
+            var counts = {};
+            STATUS_ORDER.forEach(function (k) { counts[k] = 0; });
+            requests.forEach(function (r) { var s = effStatus(r.status); if (counts[s] !== undefined) counts[s]++; });
+            document.getElementById('stats-grid').innerHTML = STATUS_ORDER.map(function (k) {
+                return '<div class="stat-card"><div class="stat-num">' + counts[k] + '</div><div class="stat-label">' + esc(t('st_' + k)) + '</div></div>';
+            }).join('');
+            var byOffice = {};
+            Object.keys(OFFICES).forEach(function (k) { byOffice[k] = 0; });
+            requests.forEach(function (r) { if (byOffice[r.target] !== undefined) byOffice[r.target]++; });
+            var max = Math.max.apply(null, Object.keys(byOffice).map(function (k) { return byOffice[k]; })) || 1;
+            document.getElementById('hod-table').innerHTML = '<tr><th scope="col">' + esc(t('service')) + '</th><th scope="col">' + esc(t('requests')) + '</th></tr>' +
+                Object.keys(byOffice).filter(function (k) { return byOffice[k] > 0; }).sort(function (a, b) { return byOffice[b] - byOffice[a]; }).map(function (k) {
+                    var pct = Math.round(byOffice[k] / max * 100);
+                    return '<tr><td><strong>' + esc(officeLabel(k)) + '</strong><div class="hod-bar"><div class="hod-bar-fill" style="width:' + pct + '%"></div></div></td><td>' + byOffice[k] + '</td></tr>';
+                }).join('');
         }
         function populateYears() { var yr = new Date().getFullYear(); var sel = document.getElementById('year-select'); sel.innerHTML = ''; for (var y = yr; y >= yr - 2; y--) { var o = document.createElement('option'); o.value = y; o.textContent = y; sel.appendChild(o); } }
-        function renderHistory() { var yr = parseInt(document.getElementById('year-select').value); var items = requestHistory.filter(function (r) { return new Date(r.ts).getFullYear() === yr; }); var list = document.getElementById('history-list'); if (items.length === 0) { list.innerHTML = '<div class="empty"><p>' + t('emptyHistory') + '</p></div>'; return; } list.innerHTML = items.map(function (r) { var label = r.status === 'rescheduled' ? t('rescheduled') : t('rejected'); var badgeClass = r.status === 'rescheduled' ? 'delegated' : 'rejected'; var detail = r.status === 'rescheduled' ? '<div style="font-size:12px;color:var(--blue);margin-top:8px;padding:8px 12px;background:var(--blue-light);border-radius:6px">' + (lang === 'fr' ? 'Date originale' : 'Original date') + ': ' + fmtDate(r.originalDate) + ' → ' + (lang === 'fr' ? 'Nouvelle date' : 'New date') + ': ' + fmtDate(r.newDate) + '</div>' : (r.rejectMsg ? '<div style="font-size:12px;color:var(--red-text);margin-top:8px;padding:8px 12px;background:var(--red-bg);border-radius:6px">↳ ' + esc(r.rejectMsg) + '</div>' : ''); return '<div class="card"><div class="card-header"><div class="card-name">' + esc(r.fname) + ' ' + esc(r.lname) + '</div><span class="badge ' + badgeClass + '">' + label + '</span></div><div class="card-meta"><span>' + fmtTS(r.ts) + '</span><span>' + r.targetLabel[lang] + '</span></div><div class="card-purpose">' + esc(r.purpose) + '</div>' + detail + '</div>'; }).join(''); }
+        function renderHistory() {
+            var yr = parseInt(document.getElementById('year-select').value);
+            var items = requestHistory.filter(function (r) { return new Date(r.ts).getFullYear() === yr; });
+            var list = document.getElementById('history-list');
+            if (items.length === 0) { list.innerHTML = '<div class="empty"><p>' + esc(t('emptyHistory')) + '</p></div>'; return; }
+            list.innerHTML = items.map(function (r) {
+                var moved = r.status === 'rescheduled';
+                var label = moved ? t('rescheduled') : t('st_declined');
+                var detail = moved
+                    ? '<div class="history-detail history-detail-moved">' + esc(lang === 'fr' ? 'Date précédente' : 'Previous date') + ': ' + fmtDate(r.originalDate) + ' → ' + esc(lang === 'fr' ? 'Nouvelle date' : 'New date') + ': ' + fmtDate(r.newDate) + '</div>'
+                    : (r.rejectMsg ? '<div class="history-detail history-detail-declined">↳ ' + esc(r.rejectMsg) + '</div>' : '');
+                return '<div class="card"><div class="card-header"><div class="card-name">' + esc(r.fname) + ' ' + esc(r.lname) + '</div><span class="badge ' + (moved ? 'rescheduled' : 'declined') + '">' + esc(label) + '</span></div><div class="card-meta"><span>' + fmtTS(r.ts) + '</span><span>' + esc(officeLabel(r.target)) + '</span></div><div class="card-purpose">' + esc(r.purpose) + '</div>' + detail + '</div>';
+            }).join('');
+        }
         function showToast(msg) { var el = document.getElementById('toast'); document.getElementById('toast-msg').textContent = msg; el.classList.add('show'); setTimeout(function () { el.classList.remove('show'); }, 3000); }
-        initSupabaseAuth(); populateYears(); initializeAuthFlow();
+        initSupabaseAuth(); populateYears(); applyLang(); initializeAuthFlow();
     </script>
 </body>
 
