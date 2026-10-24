@@ -204,11 +204,13 @@
     }
 
     .lang-toggle {
+      font: inherit;
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.55);
+      color: #fff;
+      background: transparent;
       cursor: pointer;
       padding: 4px 12px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.7);
       border-radius: 99px;
       transition: all .2s;
       white-space: nowrap
@@ -1099,7 +1101,7 @@
         <div class="nav-app">AudienceGov</div>
         <div class="nav-region" id="nav-region">Services du Gouverneur — Région du Sud</div>
       </div>
-      <div class="lang-toggle" onclick="toggleLang()" id="lang-toggle">EN</div>
+      <button type="button" class="lang-toggle" onclick="toggleLang()" id="lang-toggle">EN</button>
     </nav>
 
     <div class="panel active" id="panel-public">
