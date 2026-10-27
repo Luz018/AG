@@ -775,6 +775,12 @@
                 font-size: 12px;
             }
         }
+        .btn-email {
+            background: var(--blue-light);
+            color: var(--blue-mid);
+            border-color: var(--blue-border);
+        }
+
         .btn-print {
             background: var(--surface);
             color: var(--text);
@@ -1072,7 +1078,7 @@
                 rescheduleTitle: 'Reprogrammer l’audience', rescheduleSub: 'Choisissez une nouvelle date pour cet entretien.', saveDate: 'Enregistrer la nouvelle date',
                 toastReviewed: 'Demande marquée comme examinée', toastSent: 'Demande transmise au Gouverneur', toastAssigned: 'Date attribuée', toastDeclined: 'Demande refusée', toastCompleted: 'Demande terminée', toastRescheduled: 'Rendez-vous reprogrammé',
                 updateFailed: 'Échec de la mise à jour', historyFailed: 'Enregistré, mais l’historique n’a pas pu être mis à jour', dateUnchanged: 'La date n’a pas changé',
-                printBtn: 'Imprimer la fiche', pTitle: 'Fiche de demande d’audience', pRef: 'Numéro de référence', pName: 'Nom du demandeur', pOffice: 'Audience souhaitée avec', pStatus: 'Statut actuel', pPurpose: 'Objet de la demande', pGranted: 'Accordée', pRemarks: 'Observations', pGovSign: 'Signature du Gouverneur', pStaffH: 'À remplir par le personnel', pRecorded: 'Date enregistrée par', pContacted: 'Demandeur contacté le', pPrinted: 'Imprimé le'
+                emailBtn: 'Écrire par email', toastEmail: 'Brouillon d’email ouvert : relisez-le avant de l’envoyer', printBtn: 'Imprimer la fiche', pTitle: 'Fiche de demande d’audience', pRef: 'Numéro de référence', pName: 'Nom du demandeur', pOffice: 'Audience souhaitée avec', pStatus: 'Statut actuel', pPurpose: 'Objet de la demande', pGranted: 'Accordée', pRemarks: 'Observations', pGovSign: 'Signature du Gouverneur', pStaffH: 'À remplir par le personnel', pRecorded: 'Date enregistrée par', pContacted: 'Demandeur contacté le', pPrinted: 'Imprimé le'
             },
             en: {
                 region: 'Governor’s Services — South Region', tabStats: 'Statistics', dashboard: 'Dashboard', stats: 'Statistics & History', frequency: 'Request frequency by service', history: 'History',
@@ -1088,7 +1094,7 @@
                 rescheduleTitle: 'Reschedule appointment', rescheduleSub: 'Choose a new date for this appointment.', saveDate: 'Save new date',
                 toastReviewed: 'Request marked as reviewed', toastSent: 'Request sent to the governor', toastAssigned: 'Date assigned', toastDeclined: 'Request declined', toastCompleted: 'Request completed', toastRescheduled: 'Appointment rescheduled',
                 updateFailed: 'Update failed', historyFailed: 'Saved, but the history could not be updated', dateUnchanged: 'The date did not change',
-                printBtn: 'Print summary', pTitle: 'Audience request summary', pRef: 'Reference number', pName: 'Name of requester', pOffice: 'Audience requested with', pStatus: 'Current status', pPurpose: 'Purpose of the request', pGranted: 'Granted', pRemarks: 'Remarks', pGovSign: 'Governor’s signature', pStaffH: 'For staff use', pRecorded: 'Date recorded by', pContacted: 'Requester contacted on', pPrinted: 'Printed on'
+                emailBtn: 'Send email', toastEmail: 'Email draft opened: review it before sending', printBtn: 'Print summary', pTitle: 'Audience request summary', pRef: 'Reference number', pName: 'Name of requester', pOffice: 'Audience requested with', pStatus: 'Current status', pPurpose: 'Purpose of the request', pGranted: 'Granted', pRemarks: 'Remarks', pGovSign: 'Governor’s signature', pStaffH: 'For staff use', pRecorded: 'Date recorded by', pContacted: 'Requester contacted on', pPrinted: 'Printed on'
             }
         };
         function t(key) { return T[lang][key] || key; }
@@ -1273,6 +1279,7 @@
             if (s === 'reviewed') { b.push(actionButton('send', 'btn-next', t('actSend'), r.id)); b.push(actionButton('decline', 'btn-reject', t('actDecline'), r.id)); }
             if (s === 'awaiting_decision') { b.push(actionButton('decide', 'btn-next', t('actDecide'), r.id)); }
             if (s === 'date_assigned') { b.push(actionButton('complete', 'btn-next', t('actComplete'), r.id)); b.push(actionButton('reschedule', 'btn-reschedule', t('actReschedule'), r.id)); b.push(actionButton('decline', 'btn-reject', t('actDecline'), r.id)); }
+            if (r.email) b.push(actionButton('email', 'btn-email', t('emailBtn'), r.id));
             b.push(actionButton('print', 'btn-print', t('printBtn'), r.id));
             b.push(actionButton('whatsapp', 'btn-whatsapp', t('whatsapp'), r.id));
             return '<div class="action-row">' + b.join('') + '</div>';
@@ -1315,18 +1322,57 @@
             else if (act === 'decide') openDecision(id, 'assign');
             else if (act === 'decline') openDecision(id, 'decline');
             else if (act === 'reschedule') openReschedule(id);
+            else if (act === 'email') openEmail(id);
             else if (act === 'print') printSummary(id);
             else if (act === 'whatsapp') openWhatsApp(id);
         });
+        // ---- contacting the requester ----
+        // Nothing is sent automatically. These open a prefilled draft (email, or a WhatsApp chat)
+        // that staff read and send themselves. The wording follows the language chosen at the top
+        // (the citizen's own language is not recorded). The decline reason is never included.
+        function contactParts(r) {
+            var fr = lang === 'fr';
+            var s = effStatus(r.status);
+            var ref = r.referenceNumber || '';
+            var ad = assignedDateOf(r);
+            var body;
+            if (s === 'date_assigned' && ad) {
+                body = fr
+                    ? 'Votre demande ' + ref + ' a été examinée : une audience vous est accordée le ' + fmtDate(ad) + '. Si vous ne pouvez pas venir, merci de nous répondre en indiquant votre numéro de référence.'
+                    : 'Your request ' + ref + ' has been reviewed: an audience is granted on ' + fmtDate(ad) + '. If you cannot attend, please reply and quote your reference number.';
+            } else if (s === 'declined') {
+                body = fr
+                    ? 'Nous vous informons que votre demande ' + ref + ' n’a pas pu être accordée.'
+                    : 'We regret to inform you that your request ' + ref + ' could not be granted.';
+            } else if (s === 'completed') {
+                body = fr
+                    ? 'Votre demande ' + ref + ' est maintenant clôturée. Merci.'
+                    : 'Your request ' + ref + ' is now closed. Thank you.';
+            } else {
+                body = fr
+                    ? 'Nous accusons réception de votre demande ' + ref + '. Elle est en cours de traitement et nous vous contacterons dès qu’une décision sera prise.'
+                    : 'We acknowledge receipt of your request ' + ref + '. It is being processed and we will contact you as soon as a decision is made.';
+            }
+            return {
+                subject: (fr ? 'Votre demande d’audience ' : 'Your audience request ') + ref,
+                text: (fr ? 'Bonjour ' : 'Hello ') + (r.fname || '') + ',\n\n' + body + '\n\n' + (fr ? 'Cordialement,' : 'Kind regards,') + '\n' + t('region')
+            };
+        }
+        function openEmail(id) {
+            var r = findReq(id);
+            if (!r || !r.email) return;
+            var p = contactParts(r);
+            // the address and every part are encoded, so a strange address cannot add extra mail headers
+            window.location.href = 'mailto:' + encodeURIComponent(r.email) + '?subject=' + encodeURIComponent(p.subject) + '&body=' + encodeURIComponent(p.text.replace(/\n/g, '\r\n'));
+            showToast(t('toastEmail'));
+        }
         function openWhatsApp(id) {
             var r = findReq(id);
             if (!r) return;
-            var phone = String(r.phone || '').replace(/[\s+]/g, '');
+            var phone = String(r.phone || '').replace(/\D/g, '');
             if (/^6\d{8}$/.test(phone)) phone = '237' + phone;
-            var greeting = lang === 'fr' ? 'Bonjour' : 'Hello';
-            var requestLabel = lang === 'fr' ? 'concernant votre demande' : 'regarding your request';
-            var message = greeting + ' ' + (r.fname || '') + ', ' + requestLabel + ' ' + (r.referenceNumber || '') + '...';
-            window.open('https://wa.me/' + encodeURIComponent(phone) + '?text=' + encodeURIComponent(message), '_blank', 'noopener,noreferrer');
+            var p = contactParts(r);
+            window.open('https://wa.me/' + encodeURIComponent(phone) + '?text=' + encodeURIComponent(p.text), '_blank', 'noopener,noreferrer');
         }
 
         // ---- printable A4 summary ----
