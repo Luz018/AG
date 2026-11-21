@@ -7,6 +7,7 @@
   <title>AudienceGov — Services du Gouverneur</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
+  <script src="phone.js"></script>
   <script>
     window.AUDIENCEGOV_CONFIG = window.AUDIENCEGOV_CONFIG || {
       supabaseUrl: '',
@@ -1123,7 +1124,7 @@
         <div class="form-row">
           <div class="form-group">
             <label id="lbl-phone" for="inp-phone">Numéro de téléphone <span>*</span></label>
-            <input type="tel" id="inp-phone" placeholder="+2376XXXXXXXX" maxlength="13">
+            <input type="tel" id="inp-phone" placeholder="+2376XXXXXXXX" maxlength="25">
             <div class="field-error" id="err-phone"></div>
           </div>
           <div class="form-group">
@@ -1422,9 +1423,7 @@
     });
 
     function validateEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-    function validatePhone(p) { return /^(\+237)?6[0-9]{8}$/.test(p.replace(/\s/g, '')); }
     function wordCount(s) { var trimmed = s.trim(); return trimmed === '' ? 0 : trimmed.split(/\s+/).length; }
-    function normalizePhone(value) { return String(value || '').replace(/\s+/g, '').replace(/[^0-9+]/g, ''); }
     function getBlockedDates() {
       try {
         var raw = localStorage.getItem(blockDatesKey) || '[]';
@@ -1464,7 +1463,8 @@
       clearErr('phone'); clearErr('email'); clearErr('email2'); clearErr('purpose'); clearErr('specify');
       var fname = document.getElementById('inp-fname').value.trim();
       var lname = document.getElementById('inp-lname').value.trim();
-      var phone = document.getElementById('inp-phone').value.trim();
+      var phoneTyped = document.getElementById('inp-phone').value.trim();
+      var phone = normalizePhone(phoneTyped); // +2376XXXXXXXX, or null if not a valid number
       var email = document.getElementById('inp-email').value.trim();
       var email2 = document.getElementById('inp-email2').value.trim();
       var vtype = document.getElementById('inp-vtype').value;
@@ -1474,8 +1474,8 @@
       var date = document.getElementById('inp-date').value;
       if (!fname) { showErr('fname', t('errRequired')); ok = false; }
       if (!lname) { showErr('lname', t('errRequired')); ok = false; }
-      if (!phone) { showErr('phone', t('errRequired')); ok = false; }
-      else if (!validatePhone(phone)) { showErr('phone', t('errPhone')); ok = false; }
+      if (!phoneTyped) { showErr('phone', t('errRequired')); ok = false; }
+      else if (!phone) { showErr('phone', t('errPhone')); ok = false; }
       if (!email) { showErr('email', t('errRequired')); ok = false; }
       else if (!validateEmail(email)) { showErr('email', t('errEmail')); ok = false; }
       else if (email.toLowerCase() !== email2.toLowerCase()) { showErr('email2', t('errEmailMatch')); ok = false; }
@@ -1610,7 +1610,8 @@
 
     async function lookupRequest() {
       var reference = document.getElementById('lookup-reference').value.trim();
-      var phone = document.getElementById('lookup-phone').value.trim();
+      var phoneTyped = document.getElementById('lookup-phone').value.trim();
+      var phone = normalizePhone(phoneTyped) || phoneTyped; // an invalid number simply finds nothing
       var resultEl = document.getElementById('lookup-result');
       var errorEl = document.getElementById('lookup-error');
       resultEl.style.display = 'none';
@@ -1642,7 +1643,8 @@
 
     async function requestReschedule() {
       var reference = document.getElementById('lookup-reference').value.trim();
-      var phone = document.getElementById('lookup-phone').value.trim();
+      var phoneTyped = document.getElementById('lookup-phone').value.trim();
+      var phone = normalizePhone(phoneTyped) || phoneTyped; // an invalid number simply finds nothing
       var client = ensureSupabaseClient();
       if (!client) return;
       var result = await client.rpc('flag_reschedule_request', { p_reference: reference, p_phone: phone });
